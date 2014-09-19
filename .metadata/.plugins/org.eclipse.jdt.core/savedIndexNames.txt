@@ -1,0 +1,2 @@
+INDEX VERSION 1.127+C:\cygwin64\home\Yi Tian\rummyGin\.metadata\.plugins\org.eclipse.jdt.core
+1012861268.index
