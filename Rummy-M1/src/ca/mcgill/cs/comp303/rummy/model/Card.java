@@ -6,6 +6,11 @@ package ca.mcgill.cs.comp303.rummy.model;
 public final class Card implements Comparable<Card>
 {
 	/**
+	 * Magic number used to compute the hashcode. 
+	 */
+	private static final int HASHVALUE = 13;
+	
+	/**
 	 * Represents the rank of the card.
 	 */
 	public enum Rank 
@@ -70,7 +75,18 @@ public final class Card implements Comparable<Card>
 	 */
 	public int compareTo(Card pCard)
 	{
-		return Integer.MAX_VALUE; // TODO Complete this code.
+		if(hashCode() < pCard.hashCode()) 
+		{
+			return -1;
+		}
+		else if (hashCode() > pCard.hashCode())
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
 	}
 
 	/**
@@ -82,7 +98,15 @@ public final class Card implements Comparable<Card>
 	@Override
 	public boolean equals( Object pCard ) 
 	{
-		return true; // TODO Complete this code.
+		if (pCard == null)
+		{
+			return false;
+		}
+		if(pCard instanceof Card)
+		{
+			return compareTo((Card) pCard) == 0;
+		}
+		return false;
 	}
 
 	/** 
@@ -93,6 +117,6 @@ public final class Card implements Comparable<Card>
 	@Override
 	public int hashCode() 
 	{
-		return Integer.MAX_VALUE; // TODO Complete this code.
+		return getSuit().ordinal() * HASHVALUE + getRank().ordinal();
 	}
 }
