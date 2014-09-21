@@ -1,5 +1,6 @@
 package ca.mcgill.cs.comp303.rummy.model;
 
+import java.util.ArrayList;
 import java.util.Set;
 
 /**
@@ -11,12 +12,14 @@ import java.util.Set;
  */
 public class Hand
 {
+	int score;
+	private ArrayList<Card> aHand = new ArrayList<Card>();
 	/**
 	 * Creates a new, empty hand.
 	 */
 	public Hand()
 	{
-		// TODO
+		score = 0;
 	}
 	
 	/**
@@ -29,7 +32,10 @@ public class Hand
 	 */
 	public void add( Card pCard )
 	{
-		// TODO
+		assert(pCard != null);
+		if (contains(pCard)) throw new HandException("Card already in hand");
+		if (isComplete()) throw new HandException("Hand is complete.");
+		aHand.add(pCard);
 	}
 	
 	/**
@@ -41,7 +47,8 @@ public class Hand
 	 */
 	public void remove( Card pCard )
 	{
-		// TODO
+		assert(pCard != null);
+		aHand.remove(pCard);
 	}
 	
 	/**
@@ -49,6 +56,7 @@ public class Hand
 	 */
 	public boolean isComplete()
 	{
+		if (aHand.size() < 10) return false; 
 		return true; // TODO
 	}
 	
@@ -57,7 +65,7 @@ public class Hand
 	 */
 	public void clear()
 	{
-		// TODO
+		aHand.clear();
 	}
 	
 	/**
@@ -81,7 +89,7 @@ public class Hand
 	 */
 	public int size()
 	{
-		return Integer.MAX_VALUE; // TODO
+		return aHand.size();
 	}
 	
 	/**
@@ -93,7 +101,10 @@ public class Hand
 	 */
 	public boolean contains( Card pCard )
 	{
-		return false; // TODO
+		for (Card c : aHand){
+			if (c.equals(pCard)) return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -101,7 +112,7 @@ public class Hand
 	 */
 	public int score()
 	{
-		return Integer.MAX_VALUE; // TODO
+		return score;
 	}
 	
 	/**
