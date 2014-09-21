@@ -29,4 +29,14 @@ public class TestCard
 	{
 		assertEquals(39, aCard.hashCode());
 	}
+	
+	@Test
+	public void testCompareAndEqual()
+	{
+		Card samllCard = new Card(Rank.ACE, Suit.CLUBS);
+		assertEquals(0, aCard.compareTo(aCard));
+		assertEquals(1, aCard.compareTo(samllCard));
+		assertEquals(true, aCard.equals(aCard));
+		assertEquals(false, aCard.equals(samllCard));
+	}
 }
