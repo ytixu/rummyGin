@@ -2,6 +2,11 @@ package ca.mcgill.cs.comp303.rummy.model;
 
 import java.util.Iterator;
 
+/**
+ * A player. 
+ * @author Yi Tian
+ *
+ */
 public class Player implements ICardSet {
 	private Hand aHand = new Hand();
 	
@@ -13,11 +18,7 @@ public class Player implements ICardSet {
 
 	@Override
 	public boolean contains(Card pCard) {
-		for (Card c : this){
-			if (c.equals(pCard)){
-				return true;
-			}
-		}
+		if (aHand.contains(pCard)) return true;
 		return false;
 	}
 

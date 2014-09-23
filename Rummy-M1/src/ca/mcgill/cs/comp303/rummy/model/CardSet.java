@@ -4,6 +4,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 
+/**
+ * A immutable set of cards. 
+ * @author Yi Tian
+ *
+ */
 public class CardSet implements ICardSet {
 	
 	private ArrayList<Card> aSet;
@@ -12,10 +17,9 @@ public class CardSet implements ICardSet {
 	 * Creates a new, card set.
 	 * @param cards a set of cards
 	 */
-	@SuppressWarnings("unchecked") 
 	public CardSet(ArrayList<Card> cards){
 		//assume that the cards are distinct
-		aSet = (ArrayList<Card>) cards.clone();
+		aSet = cards;
 	}
 	
 	@Override
@@ -38,12 +42,11 @@ public class CardSet implements ICardSet {
 
 	@Override
 	public boolean isGroup() {
-		// check if we have at least 3 cards
 		if (size() < 3) return false;
 		// linear scan
 		int rank = -1;
 		for (Card c : this){
-			if (rank == -1) c.getRank().ordinal();
+			if (rank == -1) rank = c.getRank().ordinal();
 			else{
 				if (rank != c.getRank().ordinal()) return false;
 			}
@@ -53,7 +56,6 @@ public class CardSet implements ICardSet {
 
 	@Override
 	public boolean isRun() {
-		// check if we have at least 3 cards
 		if (size() < 3) return false;
 		// sort the hashcode
 		int[] hashcode = new int[size()];
