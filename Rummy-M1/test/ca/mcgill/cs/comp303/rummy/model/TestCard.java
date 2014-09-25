@@ -34,11 +34,11 @@ public class TestCard
 	@Test
 	public void testCompareAndEqual()
 	{
-		Card samllCard = new Card(Rank.ACE, Suit.CLUBS);
+		Card smallCard = new Card(Rank.ACE, Suit.CLUBS);
 		assertEquals(0, aCard.compareTo(aCard));
-		assertEquals(1, aCard.compareTo(samllCard));
+		assertEquals(1, aCard.compareTo(smallCard));
 		assertEquals(true, aCard.equals(aCard));
-		assertEquals(false, aCard.equals(samllCard));
+		assertEquals(false, aCard.equals(smallCard));
 	}
 	
 	@Test
