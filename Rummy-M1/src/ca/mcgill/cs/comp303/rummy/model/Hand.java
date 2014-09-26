@@ -47,6 +47,7 @@ public class Hand
 		return aHand.keySet();
 	}
 	
+	
 	/*
 	 * Prepare to call autoMatch again
 	 */
@@ -191,11 +192,18 @@ public class Hand
                 return c2.getRank().ordinal() -  c1.getRank().ordinal();
             }
         });
-		for (int i=0; i<sortedHand.size() - 2; i++){
-			for (int j=i+2; j<sortedHand.size(); j++){
-				CardSet tryMatch = new CardSet((ArrayList<Card>) sortedHand.subList(i, j));
+		for (int i=0; i<sortedHand.size() - 3; i++){
+			for (int j=i+3; j<=sortedHand.size(); j++){
+				CardSet tryMatch = new CardSet(new ArrayList<Card>(sortedHand.subList(i, j)));
 				if (tryMatch.isGroup()){
 					aMatchedSet.put(tryMatch, false);
+					if (tryMatch.size() == 4){
+						for (int k = 1; k < 3; k++){
+							ArrayList<Card> middleMatch = new ArrayList<Card>(sortedHand.subList(i, j));
+							middleMatch.remove(k);
+							aMatchedSet.put(new CardSet(middleMatch), false);
+						}
+					}
 				}else{
 					break;
 				}
@@ -212,12 +220,12 @@ public class Hand
 	 */
 	public void createRun( Set<Card> pCards )
 	{
-		assert(pCards != null);
+		assert(pCards != null); 
 		ArrayList<Card> sortedHand = new ArrayList<Card>(pCards);
 		Collections.sort(sortedHand);
-		for (int i=0; i<sortedHand.size() - 2; i++){
-			for (int j=i+2; j<sortedHand.size(); j++){
-				CardSet tryMatch = new CardSet((ArrayList<Card>) sortedHand.subList(i, j));
+		for (int i=0; i<sortedHand.size() - 3; i++){
+			for (int j=i+3; j<=sortedHand.size(); j++){
+				CardSet tryMatch = new CardSet(new ArrayList<Card>(sortedHand.subList(i, j)));
 				if (tryMatch.isRun()){
 					aMatchedSet.put(tryMatch, false);
 				}else{
@@ -241,39 +249,53 @@ public class Hand
 		// minimization algo
 		int minScore = Integer.MAX_VALUE;
 		ArrayList<CardSet> cardSets = new ArrayList<CardSet>(aMatchedSet.keySet());
-		@SuppressWarnings("unchecked")
-		HashMap<Card, Boolean> matchedCards = (HashMap<Card, Boolean>) aHand.clone();
-		@SuppressWarnings("unchecked")
-		HashMap<CardSet, Boolean> usedCardSet = (HashMap<CardSet, Boolean>) aMatchedSet.clone();
+		HashSet<Card> optCards = new HashSet<Card>();
+		HashSet<CardSet> usedCardSet = new HashSet<CardSet>();
 		
-		for (int i=0; i<cardSets.size(); i++){
-			for (CardSet s : cardSets.subList(i+1, cardSets.size()-1)){
+		System.out.println(cardSets.size());
+		for (int i=0; i<cardSets.size()-1; i++){
+			for (CardSet s : cardSets.subList(i, cardSets.size())){
+				System.out.println(s);
 				// check if all cards are unmatched
 				boolean isFree = true;
-				for (Card c : s) if ((boolean) matchedCards.get(c)) break;
+				for (Card c : s){
+					if (aHand.get(c)){
+						isFree = false;
+						break;
+					}
+				}
 				// if a card is matched, skip
 				if (! isFree) continue;
+				System.out.println("free");
 				// else add this cardset to solution
-				for (Card c : s) matchedCards.put(c, true);
-				usedCardSet.put(s, true);
+				for (Card c : s) aHand.put(c, true);
+				usedCardSet.add(s);
 			}
 			// update and reset
+//			System.out.println("Score = " + score());
+//			for (CardSet s : usedCardSet){ 
+//				System.out.println(s);
+//			}
 			int score = score();
 			if (score < minScore){
 				minScore = score;
-				for (Entry<CardSet, Boolean> cb : usedCardSet.entrySet()){
-					aMatchedSet.put(cb.getKey(), cb.getValue());
-					usedCardSet.put(cb.getKey(), false);
+				for (CardSet s : aMatchedSet.keySet()){
+					if (usedCardSet.contains(s)) aMatchedSet.put(s, true);
+					else aMatchedSet.put(s, false);
 				}
-				for (Entry<Card, Boolean> cb : matchedCards.entrySet()){
-					aHand.put(cb.getKey(), cb.getValue());
-					matchedCards.put(cb.getKey(), false);
+				optCards.clear();
+				for (Card c : aHand.keySet()){
+					if (aHand.get(c)) optCards.add(c);
 				}
-			}else{
-				for (CardSet s : usedCardSet.keySet()) usedCardSet.put(s, false);
-				for (Card c : matchedCards.keySet()) matchedCards.put(c, false);
 			}
+			usedCardSet.clear();
+			for (Card c : aHand.keySet()) aHand.put(c, false);
+			System.out.println(i);
 		}
-		
+		// restore answer
+		for (Card c : aHand.keySet()){
+			if (optCards.contains(c)) aHand.put(c, true);
+			else aHand.put(c, false);
+		}
 	}
 }

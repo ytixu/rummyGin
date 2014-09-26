@@ -19,10 +19,9 @@ public class CardSet implements ICardSet {
 	 * Creates a new, card set.
 	 * @param pCards a set of cards
 	 */
-	@SuppressWarnings("unchecked")
 	public CardSet(ArrayList<Card> pCards){
 		//assume that the cards are distinct
-		aSet = (ArrayList<Card>) pCards.clone();
+		aSet = pCards;
 	}
 	
 	@Override
@@ -59,10 +58,8 @@ public class CardSet implements ICardSet {
 	public boolean isRun() {
 		// if (size() < 3) return false;
 		// linear scan, since we assume sorted order 
-		int cardHashCode = -1;
 		for (int i=0; i<size()-1; i++){
-			if (cardHashCode == -1) cardHashCode = aSet.get(i).hashCode();
-			else if (aSet.get(i).hashCode() + 1 != aSet.get(i+1).hashCode()) return false;
+			if (aSet.get(i).hashCode() + 1 != aSet.get(i+1).hashCode()) return false;
 		}
 		return true;
 	}

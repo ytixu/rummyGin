@@ -14,6 +14,8 @@ import ca.mcgill.cs.comp303.rummy.model.Card.Suit;
 public class TestHand
 {
 	private Card[] aCards;
+	private Hand aHand;
+	private int aScore;
 	
 	@Before
 	public void setup() 
@@ -26,25 +28,42 @@ public class TestHand
 							new Card(Rank.QUEEN, Suit.CLUBS),
 							new Card(Rank.TEN, Suit.SPADES),
 							new Card(Rank.QUEEN, Suit.HEARTS),
-							new Card(Rank.JACK, Suit.SPADES)};
+							new Card(Rank.JACK, Suit.SPADES),
+							new Card(Rank.ACE, Suit.DIAMONDS),
+							new Card(Rank.EIGHT, Suit.DIAMONDS)};
+		// optimal combination is [k,q,j,10,9], [q,q,q]
+		aScore = 9;
+		aHand = new Hand();
+		for (int i=0; i < aCards.length; i++) aHand.add(aCards[i]);
+		
 	}
 	
 	@Test
 	public void testAdd(){
-		Hand hand = new Hand();
-		for (int i=0; i < aCards.length; i++) hand.add(aCards[i]);
-		Set<Card> inHand = hand.getHand();
-		System.out.println(inHand.toString());
-		for (int i=0; i < aCards.length; i++) assert(hand.contains(aCards[i])); 
-		assertEquals(hand.size(), aCards.length);
+		Set<Card> inHand = aHand.getHand();
+//		System.out.println(inHand.toString());
+		for (int i=0; i < aCards.length; i++)
+		{
+			assertTrue(aHand.contains(aCards[i])); 
+		}
+		assertEquals(aHand.size(), aCards.length);
 	}
+//	
+//	@Test
+//	public void testComplete(){
+//		assertTrue(aHand.isComplete());
+//	}
+//	
+//	@Test
+//	public void testRemove(){
+//		aHand.remove(aCards[0]);
+//		assertTrue(!aHand.isComplete());
+//	}
 	
 	@Test
 	public void testAutoMatch(){
-		Hand hand = new Hand();
-		for (int i=0; i < aCards.length; i++) hand.add(aCards[i]);
-		hand.autoMatch();
-		Set<CardSet> matchedSet = hand.getMatchedSets();
+		aHand.autoMatch();
+		Set<CardSet> matchedSet = aHand.getMatchedSets();
 		System.out.println(matchedSet.toString());
 	}
 }
