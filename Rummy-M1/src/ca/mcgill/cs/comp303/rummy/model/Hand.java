@@ -59,6 +59,10 @@ public class Hand
 		aAutomatched = false; // now we can call autoMatch again
 	}
 	
+	public boolean isMatched(){
+		return aAutomatched;
+	}
+	
 	/**
 	 * Adds pCard to the list of unmatched cards.
 	 * If the card is already in the hand, it is not added.
@@ -87,9 +91,9 @@ public class Hand
 	public void remove( Card pCard )
 	{
 		assert(pCard != null);
-		aHand.remove(pCard);
+		Boolean removed = aHand.remove(pCard);
 		
-		if (aAutomatched) reset();
+		if (removed != null && aAutomatched) reset();
 	}
 	
 	/**
@@ -235,6 +239,49 @@ public class Hand
 		}
 	}
 	
+	/*
+	 * Helper method for automatch
+	 */
+	private HashMap<Integer, HashSet<CardSet>> autoMatchRecurse(ArrayList<CardSet> pSets, 
+																ArrayList<Card> pCards){
+		if (pSets.isEmpty()) return new HashMap<Integer, HashSet<CardSet>>();
+		
+		HashMap<Integer, HashSet<CardSet>> result  = 
+				autoMatchRecurse(new ArrayList<CardSet>(pSets.subList(1, pSets.size())), 
+								 new ArrayList<Card>(pCards));
+		
+		// if first element can be put in
+		boolean isFree = true;
+		for (Card c : pSets.get(0)){
+			if (pCards.contains(c)){
+				isFree = false;
+				break;
+			}
+		}
+		if (isFree){
+			int point = 0;
+			ArrayList<Card> inCards = new ArrayList<Card>(pCards);
+			for (Card c : pSets.get(0)){
+				inCards.add(c);
+				point += c.getRank().ordinal();
+			}
+			HashMap<Integer, HashSet<CardSet>> tempResult = 
+					autoMatchRecurse(new ArrayList<CardSet>(pSets.subList(1, pSets.size())), inCards);
+			if (tempResult.isEmpty()){
+				HashSet<CardSet> resSet = new HashSet<CardSet>();
+				resSet.add(pSets.get(0));
+				result.put(point, resSet);
+			}else{
+				for (Integer i : tempResult.keySet()){
+					HashSet<CardSet> resSet = new HashSet<CardSet>(tempResult.get(i));
+					resSet.add(pSets.get(0));
+					result.put(point + i, resSet);
+				}
+			}
+		}
+		return result; 
+	}
+	
 	/**
 	 * Calculates the matching of cards into groups and runs that
 	 * results in the lowest amount of points for unmatched cards.
@@ -242,60 +289,20 @@ public class Hand
 	public void autoMatch()
 	{
 		if (aAutomatched) return; // matched already done.
+		aAutomatched = true;
 		
 		createGroup(aHand.keySet());
 		createRun(aHand.keySet());
 		
-		// minimization algo
-		int minScore = Integer.MAX_VALUE;
-		ArrayList<CardSet> cardSets = new ArrayList<CardSet>(aMatchedSet.keySet());
-		HashSet<Card> optCards = new HashSet<Card>();
-		HashSet<CardSet> usedCardSet = new HashSet<CardSet>();
+		HashMap<Integer, HashSet<CardSet>> matches = 
+				autoMatchRecurse(new ArrayList<CardSet>(aMatchedSet.keySet()), new ArrayList<Card>());
 		
-		System.out.println(cardSets.size());
-		for (int i=0; i<cardSets.size()-1; i++){
-			for (CardSet s : cardSets.subList(i, cardSets.size())){
-				System.out.println(s);
-				// check if all cards are unmatched
-				boolean isFree = true;
-				for (Card c : s){
-					if (aHand.get(c)){
-						isFree = false;
-						break;
-					}
-				}
-				// if a card is matched, skip
-				if (! isFree) continue;
-				System.out.println("free");
-				// else add this cardset to solution
-				for (Card c : s) aHand.put(c, true);
-				usedCardSet.add(s);
-			}
-			// update and reset
-//			System.out.println("Score = " + score());
-//			for (CardSet s : usedCardSet){ 
-//				System.out.println(s);
-//			}
-			int score = score();
-			if (score < minScore){
-				minScore = score;
-				for (CardSet s : aMatchedSet.keySet()){
-					if (usedCardSet.contains(s)) aMatchedSet.put(s, true);
-					else aMatchedSet.put(s, false);
-				}
-				optCards.clear();
-				for (Card c : aHand.keySet()){
-					if (aHand.get(c)) optCards.add(c);
-				}
-			}
-			usedCardSet.clear();
-			for (Card c : aHand.keySet()) aHand.put(c, false);
-			System.out.println(i);
-		}
-		// restore answer
-		for (Card c : aHand.keySet()){
-			if (optCards.contains(c)) aHand.put(c, true);
-			else aHand.put(c, false);
+		ArrayList<Integer> sortedPoints = new ArrayList<Integer>(matches.keySet());
+		Collections.sort(sortedPoints);
+		// Minimize deadwook = maximize points in the matches
+		for (CardSet s : matches.get(sortedPoints.get(sortedPoints.size() - 1))){
+			for (Card c : s) aHand.put(c, true);
+			aMatchedSet.put(s, true);
 		}
 	}
 }
