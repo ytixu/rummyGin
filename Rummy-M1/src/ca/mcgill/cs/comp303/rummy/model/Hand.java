@@ -27,9 +27,7 @@ public class Hand
 	 * Might think of a better way to keep previous solution
 	 */
 	private HashMap<CardSet, Boolean> aMatchedSet;
-	
-	private boolean aAutomatched; // state, whether automatched is called
-	
+		
 	/**
 	 * Creates a new, empty hand.
 	 */
@@ -37,11 +35,10 @@ public class Hand
 	{
 		aMatchedSet = new HashMap<CardSet, Boolean>();
 		aHand = new HashMap<Card, Boolean>();
-		aAutomatched = false; 
 	}
 	
 	/*
-	 * Get a list of the card in the hand
+	 * Get a list of the card in the hand (used only for debug)
 	 */
 	public Set<Card> getHand(){
 		return aHand.keySet();
@@ -51,16 +48,15 @@ public class Hand
 	/*
 	 * Prepare to call autoMatch again
 	 */
-	public void reset(){
+	private void reset(){
 		aMatchedSet.clear();
 		for (Card c : aHand.keySet()){
 			aHand.put(c, false);
 		}
-		aAutomatched = false; // now we can call autoMatch again
 	}
 	
 	public boolean isMatched(){
-		return aAutomatched;
+		return !aMatchedSet.isEmpty();
 	}
 	
 	/**
@@ -78,7 +74,7 @@ public class Hand
 		if (isComplete()) throw new HandException("Hand is complete.");
 		aHand.put(pCard, false);
 		
-		if (aAutomatched) reset();
+		if (isMatched()) reset();
 	}
 	
 	/**
@@ -93,7 +89,7 @@ public class Hand
 		assert(pCard != null);
 		Boolean removed = aHand.remove(pCard);
 		
-		if (removed != null && aAutomatched) reset();
+		if (removed != null && isMatched()) reset();
 	}
 	
 	/**
@@ -111,6 +107,7 @@ public class Hand
 	public void clear()
 	{
 		aHand.clear();
+		reset();
 	}
 	
 	
@@ -288,8 +285,7 @@ public class Hand
 	 */
 	public void autoMatch()
 	{
-		if (aAutomatched) return; // matched already done.
-		aAutomatched = true;
+		if (isMatched()) return; // matched already done.
 		
 		createGroup(aHand.keySet());
 		createRun(aHand.keySet());

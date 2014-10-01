@@ -108,10 +108,6 @@ public class TestHand
 		aHand.remove(aCards[0]);
 		assertTrue(aHand.contains(aCards[1]));
 		aHand.add(aCards[1]);
-	}
 	
-	@Test(expected=AssertionError.class)
-	public void testRemoveNull(){
-		aHand.remove(null);
 	}
 }
