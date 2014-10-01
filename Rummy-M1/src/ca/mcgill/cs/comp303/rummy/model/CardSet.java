@@ -9,7 +9,8 @@ import java.util.Iterator;
  *
  */
 	
-public class CardSet implements ICardSet {
+public class CardSet implements ICardSet 
+{
 	
 	// Assume that the cards are sorted and has at least 3 elements
 		
@@ -19,52 +20,74 @@ public class CardSet implements ICardSet {
 	 * Creates a new, card set.
 	 * @param pCards a set of cards
 	 */
-	public CardSet(ArrayList<Card> pCards){
+	public CardSet(ArrayList<Card> pCards)
+	{
 		//assume that the cards are distinct
 		aSet = pCards;
 	}
 	
 	@Override
-	public Iterator<Card> iterator() {
+	public Iterator<Card> iterator() 
+	{
 		return aSet.iterator();
 	}
 
 	@Override
-	public boolean contains(Card pCard) {
-		for (Card c : this){
-			if (c.equals(pCard)) return true;
+	public boolean contains(Card pCard) 
+	{
+		for (Card c : this)
+		{
+			if (c.equals(pCard))
+			{
+				return true;
+			}
 		}
 		return false;
 	}
 
 	@Override
-	public int size() {
+	public int size() 
+	{
 		return aSet.size();
 	}
 
 	@Override
-	public boolean isGroup() {
+	public boolean isGroup() 
+	{
 		// if (size() < 3) return false;
 		// linear scan
 		int rank = -1;
-		for (Card c : this){
-			if (rank == -1) rank = c.getRank().ordinal();
-			else if (rank != c.getRank().ordinal()) return false;
+		for (Card c : this)
+		{
+			if (rank == -1)
+			{
+				rank = c.getRank().ordinal();
+			} 
+			else if (rank != c.getRank().ordinal())
+			{
+				return false;
+			}
 		}
 		return true;
 	}
 
 	@Override
-	public boolean isRun() {
+	public boolean isRun() 
+	{
 		// if (size() < 3) return false;
 		// linear scan, since we assume sorted order 
-		for (int i=0; i<size()-1; i++){
-			if (aSet.get(i).hashCode() + 1 != aSet.get(i+1).hashCode()) return false;
+		for (int i = 0; i<size()-1; i++)
+		{
+			if (aSet.get(i).hashCode() + 1 != aSet.get(i+1).hashCode())
+			{
+				return false;
+			}
 		}
 		return true;
 	}
 	
-	public String toString(){
+	public String toString()
+	{
 		return aSet.toString();
 	}
 }

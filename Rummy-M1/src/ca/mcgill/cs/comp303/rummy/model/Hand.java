@@ -18,6 +18,7 @@ import java.util.Set;
  */
 public class Hand
 {	
+	private static final int HANDSIZE = 10;
 	private HashMap<Card, Boolean> aHand;
 	
 	/*
@@ -40,7 +41,8 @@ public class Hand
 	/*
 	 * Get a list of the card in the hand (used only for debug)
 	 */
-	public Set<Card> getHand(){
+	public Set<Card> getHand()
+	{
 		return aHand.keySet();
 	}
 	
@@ -48,14 +50,20 @@ public class Hand
 	/*
 	 * Prepare to call autoMatch again
 	 */
-	private void reset(){
+	private void reset()
+	{
 		aMatchedSet.clear();
-		for (Card c : aHand.keySet()){
+		for (Card c : aHand.keySet())
+		{
 			aHand.put(c, false);
 		}
 	}
 	
-	public boolean isMatched(){
+	/*
+	 * Check if automatch has already been called
+	 */
+	public boolean isMatched()
+	{
 		return !aMatchedSet.isEmpty();
 	}
 	
@@ -69,12 +77,21 @@ public class Hand
 	 */
 	public void add( Card pCard )
 	{
-		assert(pCard != null);
-		if (contains(pCard)) throw new HandException("Card already in hand");
-		if (isComplete()) throw new HandException("Hand is complete.");
+		assert pCard != null;
+		if (contains(pCard))
+		{
+			throw new HandException("Card already in hand");
+		}
+		if (isComplete())
+		{
+			throw new HandException("Hand is complete.");
+		}
 		aHand.put(pCard, false);
 		
-		if (isMatched()) reset();
+		if (isMatched())
+		{
+			reset();
+		}
 	}
 	
 	/**
@@ -86,10 +103,13 @@ public class Hand
 	 */
 	public void remove( Card pCard )
 	{
-		assert(pCard != null);
+		assert pCard != null;
 		Boolean removed = aHand.remove(pCard);
 		
-		if (removed != null && isMatched()) reset();
+		if (removed != null && isMatched())
+		{
+			reset();
+		}
 	}
 	
 	/**
@@ -97,7 +117,10 @@ public class Hand
 	 */
 	public boolean isComplete()
 	{
-		if (aHand.size() < 10) return false; 
+		if (aHand.size() < HANDSIZE)
+		{
+			return false; 
+		}
 		return true; 
 	}
 	
@@ -117,8 +140,10 @@ public class Hand
 	public Set<CardSet> getMatchedSets() // changed input type Set<ICardSet>
 	{
 		HashSet<CardSet> matchedSets = new HashSet<CardSet>();
-		for (Entry<CardSet, Boolean> cs : aMatchedSet.entrySet()){
-			if ((boolean) cs.getValue()){
+		for (Entry<CardSet, Boolean> cs : aMatchedSet.entrySet())
+		{
+			if ((boolean) cs.getValue())
+			{
 				matchedSets.add(cs.getKey());
 			}
 		}
@@ -132,8 +157,10 @@ public class Hand
 	public Set<Card> getUnmatchedCards()
 	{
 		Set<Card> cardSet = new HashSet<Card>();
-		for (Entry<Card, Boolean> cs : aHand.entrySet()){
-			if (! (boolean) cs.getValue()){
+		for (Entry<Card, Boolean> cs : aHand.entrySet())
+		{
+			if (!(boolean) cs.getValue())
+			{
 				cardSet.add(cs.getKey());
 			}
 		}
@@ -157,8 +184,12 @@ public class Hand
 	 */
 	public boolean contains( Card pCard )
 	{
-		for (Card c : aHand.keySet()){
-			if (c.equals(pCard)) return true;
+		for (Card c : aHand.keySet())
+		{
+			if (c.equals(pCard))
+			{
+				return true;
+			}
 		}
 		return false;
 	}
@@ -169,8 +200,10 @@ public class Hand
 	public int score()
 	{
 		int score = 0;
-		for (Entry<Card, Boolean> cs : aHand.entrySet()){
-			if (! (boolean) cs.getValue()){
+		for (Entry<Card, Boolean> cs : aHand.entrySet())
+		{
+			if (!(boolean) cs.getValue())
+			{
 				score += cs.getKey().getRank().ordinal();
 			}
 		}
@@ -186,26 +219,34 @@ public class Hand
 	 */
 	public void createGroup( Set<Card> pCards )
 	{
-		assert(pCards != null);
+		assert pCards != null;
 		ArrayList<Card> sortedHand = new ArrayList<Card>(pCards);
 		Collections.sort(sortedHand, new Comparator<Card>(){
-            public int compare(Card c1,Card c2){
-                return c2.getRank().ordinal() -  c1.getRank().ordinal();
+            public int compare(Card pC1, Card pC2)
+            {
+                return pC2.getRank().ordinal() -  pC1.getRank().ordinal();
             }
         });
-		for (int i=0; i<sortedHand.size() - 3; i++){
-			for (int j=i+3; j<=sortedHand.size(); j++){
+		for (int i = 0; i<sortedHand.size() - 3; i++)
+		{
+			for (int j = i+3; j<=sortedHand.size(); j++)
+			{
 				CardSet tryMatch = new CardSet(new ArrayList<Card>(sortedHand.subList(i, j)));
-				if (tryMatch.isGroup()){
+				if (tryMatch.isGroup())
+				{
 					aMatchedSet.put(tryMatch, false);
-					if (tryMatch.size() == 4){
-						for (int k = 1; k < 3; k++){
+					if (tryMatch.size() == 4)
+					{
+						for (int k = 1; k < 3; k++)
+						{
 							ArrayList<Card> middleMatch = new ArrayList<Card>(sortedHand.subList(i, j));
 							middleMatch.remove(k);
 							aMatchedSet.put(new CardSet(middleMatch), false);
 						}
 					}
-				}else{
+				}
+				else
+				{
 					break;
 				}
 			}
@@ -221,15 +262,20 @@ public class Hand
 	 */
 	public void createRun( Set<Card> pCards )
 	{
-		assert(pCards != null); 
+		assert pCards != null; 
 		ArrayList<Card> sortedHand = new ArrayList<Card>(pCards);
 		Collections.sort(sortedHand);
-		for (int i=0; i<sortedHand.size() - 3; i++){
-			for (int j=i+3; j<=sortedHand.size(); j++){
+		for (int i = 0; i<sortedHand.size() - 3; i++)
+		{
+			for (int j = i+3; j<=sortedHand.size(); j++)
+			{
 				CardSet tryMatch = new CardSet(new ArrayList<Card>(sortedHand.subList(i, j)));
-				if (tryMatch.isRun()){
+				if (tryMatch.isRun())
+				{
 					aMatchedSet.put(tryMatch, false);
-				}else{
+				}
+				else
+				{
 					break;
 				}
 			}
@@ -240,8 +286,12 @@ public class Hand
 	 * Helper method for automatch
 	 */
 	private HashMap<Integer, HashSet<CardSet>> autoMatchRecurse(ArrayList<CardSet> pSets, 
-																ArrayList<Card> pCards){
-		if (pSets.isEmpty()) return new HashMap<Integer, HashSet<CardSet>>();
+																ArrayList<Card> pCards)
+	{
+		if (pSets.isEmpty())
+		{
+			return new HashMap<Integer, HashSet<CardSet>>();
+		}
 		
 		HashMap<Integer, HashSet<CardSet>> result  = 
 				autoMatchRecurse(new ArrayList<CardSet>(pSets.subList(1, pSets.size())), 
@@ -249,27 +299,35 @@ public class Hand
 		
 		// if first element can be put in
 		boolean isFree = true;
-		for (Card c : pSets.get(0)){
-			if (pCards.contains(c)){
+		for (Card c : pSets.get(0))
+		{
+			if (pCards.contains(c))
+			{
 				isFree = false;
 				break;
 			}
 		}
-		if (isFree){
+		if (isFree)
+		{
 			int point = 0;
 			ArrayList<Card> inCards = new ArrayList<Card>(pCards);
-			for (Card c : pSets.get(0)){
+			for (Card c : pSets.get(0))
+			{
 				inCards.add(c);
 				point += c.getRank().ordinal();
 			}
 			HashMap<Integer, HashSet<CardSet>> tempResult = 
 					autoMatchRecurse(new ArrayList<CardSet>(pSets.subList(1, pSets.size())), inCards);
-			if (tempResult.isEmpty()){
+			if (tempResult.isEmpty())
+			{
 				HashSet<CardSet> resSet = new HashSet<CardSet>();
 				resSet.add(pSets.get(0));
 				result.put(point, resSet);
-			}else{
-				for (Integer i : tempResult.keySet()){
+			}
+			else
+			{
+				for (Integer i : tempResult.keySet())
+				{
 					HashSet<CardSet> resSet = new HashSet<CardSet>(tempResult.get(i));
 					resSet.add(pSets.get(0));
 					result.put(point + i, resSet);
@@ -285,7 +343,10 @@ public class Hand
 	 */
 	public void autoMatch()
 	{
-		if (isMatched()) return; // matched already done.
+		if (isMatched()) // matched already done.
+		{
+			return; 
+		}
 		
 		createGroup(aHand.keySet());
 		createRun(aHand.keySet());
@@ -296,8 +357,12 @@ public class Hand
 		ArrayList<Integer> sortedPoints = new ArrayList<Integer>(matches.keySet());
 		Collections.sort(sortedPoints);
 		// Minimize deadwook = maximize points in the matches
-		for (CardSet s : matches.get(sortedPoints.get(sortedPoints.size() - 1))){
-			for (Card c : s) aHand.put(c, true);
+		for (CardSet s : matches.get(sortedPoints.get(sortedPoints.size() - 1)))
+		{
+			for (Card c : s)
+			{
+				aHand.put(c, true);
+			}
 			aMatchedSet.put(s, true);
 		}
 	}
