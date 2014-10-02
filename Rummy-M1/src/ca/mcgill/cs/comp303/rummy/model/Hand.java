@@ -1,13 +1,9 @@
 package ca.mcgill.cs.comp303.rummy.model;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
 import java.util.Set;
 
+import ca.mcgill.cs.comp303.rummy.model.Card.Rank;
 
 /**
  * Models a hand of 10 cards. The hand is not sorted. Not threadsafe.
@@ -17,50 +13,21 @@ import java.util.Set;
  * @inv size() <= HAND_SIZE
  */
 public class Hand
-{	
-	private HashMap<Card, Boolean> aHand;
-	
-	/*
-	 * A set of CardSet
-	 * It tells which CardSets gives the optimal score
-	 * But at each time a new card is added (and another card is removed), this must be rebuilt
-	 * Might think of a better way to keep previous solution
-	 */
-	private HashMap<CardSet, Boolean> aMatchedSet;
-	
-	private boolean aAutomatched; // state, whether automatched is called
+{
+	private static final int FACE_POINT = 10;
+	private static final int HAND_SIZE = 10;
+	private Set<Card> aHand;
+	private Set<ICardSet> aMatchedSets;
+	private Set<Card> aUnmatchedCards;
 	
 	/**
 	 * Creates a new, empty hand.
 	 */
 	public Hand()
 	{
-		aMatchedSet = new HashMap<CardSet, Boolean>();
-		aHand = new HashMap<Card, Boolean>();
-		aAutomatched = false; 
-	}
-	
-	/*
-	 * Get a list of the card in the hand
-	 */
-	public Set<Card> getHand(){
-		return aHand.keySet();
-	}
-	
-	
-	/*
-	 * Prepare to call autoMatch again
-	 */
-	public void reset(){
-		aMatchedSet.clear();
-		for (Card c : aHand.keySet()){
-			aHand.put(c, false);
-		}
-		aAutomatched = false; // now we can call autoMatch again
-	}
-	
-	public boolean isMatched(){
-		return aAutomatched;
+		aHand = new HashSet<Card>();
+		aMatchedSets = new HashSet<ICardSet>();
+		aUnmatchedCards = new HashSet<Card>();
 	}
 	
 	/**
@@ -73,12 +40,15 @@ public class Hand
 	 */
 	public void add( Card pCard )
 	{
-		assert(pCard != null);
-		if (contains(pCard)) throw new HandException("Card already in hand");
-		if (isComplete()) throw new HandException("Hand is complete.");
-		aHand.put(pCard, false);
-		
-		if (aAutomatched) reset();
+		assert pCard != null;
+		if(isComplete()) 
+		{
+			throw new HandException("Hand is complete.");
+		}
+		if(!aHand.add(pCard))
+		{
+			throw new HandException("Card is already in hand.");
+		}
 	}
 	
 	/**
@@ -90,10 +60,8 @@ public class Hand
 	 */
 	public void remove( Card pCard )
 	{
-		assert(pCard != null);
-		Boolean removed = aHand.remove(pCard);
-		
-		if (removed != null && aAutomatched) reset();
+		assert pCard != null;
+		aHand.remove(pCard);
 	}
 	
 	/**
@@ -101,8 +69,11 @@ public class Hand
 	 */
 	public boolean isComplete()
 	{
-		if (aHand.size() < 10) return false; 
-		return true; 
+		if(aHand.size() == HAND_SIZE) 
+		{
+			return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -113,20 +84,14 @@ public class Hand
 		aHand.clear();
 	}
 	
-	
 	/**
 	 * @return A copy of the set of matched sets
 	 */
-	public Set<CardSet> getMatchedSets() // changed input type Set<ICardSet>
+	public Set<ICardSet> getMatchedSets()
 	{
-		HashSet<CardSet> matchedSets = new HashSet<CardSet>();
-		for (Entry<CardSet, Boolean> cs : aMatchedSet.entrySet()){
-			if ((boolean) cs.getValue()){
-				matchedSets.add(cs.getKey());
-			}
-		}
-		
-		return matchedSets;
+		Set<ICardSet> copy = new HashSet<ICardSet>();
+		copy.addAll(aMatchedSets);
+		return copy;
 	}
 	
 	/**
@@ -134,13 +99,9 @@ public class Hand
 	 */
 	public Set<Card> getUnmatchedCards()
 	{
-		Set<Card> cardSet = new HashSet<Card>();
-		for (Entry<Card, Boolean> cs : aHand.entrySet()){
-			if (! (boolean) cs.getValue()){
-				cardSet.add(cs.getKey());
-			}
-		}
-		return cardSet; 
+		Set<Card> copy = new HashSet<Card>();
+		copy.addAll(aUnmatchedCards);
+		return copy;
 	}
 	
 	/**
@@ -160,10 +121,8 @@ public class Hand
 	 */
 	public boolean contains( Card pCard )
 	{
-		for (Card c : aHand.keySet()){
-			if (c.equals(pCard)) return true;
-		}
-		return false;
+		assert pCard != null;
+		return aHand.contains(pCard);
 	}
 	
 	/**
@@ -172,9 +131,15 @@ public class Hand
 	public int score()
 	{
 		int score = 0;
-		for (Entry<Card, Boolean> cs : aHand.entrySet()){
-			if (! (boolean) cs.getValue()){
-				score += cs.getKey().getRank().ordinal();
+		for(Card card : aUnmatchedCards)
+		{
+			if(card.getRank().ordinal() >= Rank.TEN.ordinal())
+			{
+				score += FACE_POINT;
+			}
+			else
+			{
+				score += card.getRank().ordinal() + 1;
 			}
 		}
 		return score;
@@ -189,29 +154,20 @@ public class Hand
 	 */
 	public void createGroup( Set<Card> pCards )
 	{
-		assert(pCards != null);
-		ArrayList<Card> sortedHand = new ArrayList<Card>(pCards);
-		Collections.sort(sortedHand, new Comparator<Card>(){
-            public int compare(Card c1,Card c2){
-                return c2.getRank().ordinal() -  c1.getRank().ordinal();
-            }
-        });
-		for (int i=0; i<sortedHand.size() - 3; i++){
-			for (int j=i+3; j<=sortedHand.size(); j++){
-				CardSet tryMatch = new CardSet(new ArrayList<Card>(sortedHand.subList(i, j)));
-				if (tryMatch.isGroup()){
-					aMatchedSet.put(tryMatch, false);
-					if (tryMatch.size() == 4){
-						for (int k = 1; k < 3; k++){
-							ArrayList<Card> middleMatch = new ArrayList<Card>(sortedHand.subList(i, j));
-							middleMatch.remove(k);
-							aMatchedSet.put(new CardSet(middleMatch), false);
-						}
-					}
-				}else{
-					break;
-				}
-			}
+		assert pCards != null;
+		if(!aUnmatchedCards.containsAll(pCards))
+		{
+			throw new HandException("Cards are not all from unmatched cards.");
+		}
+		
+		Group newGroup = new Group(pCards);
+		if(newGroup.isValid())
+		{
+			aMatchedSets.add(newGroup);
+		}
+		else 
+		{
+			throw new HandException("Not valid group.");
 		}
 	}
 	
@@ -224,62 +180,21 @@ public class Hand
 	 */
 	public void createRun( Set<Card> pCards )
 	{
-		assert(pCards != null); 
-		ArrayList<Card> sortedHand = new ArrayList<Card>(pCards);
-		Collections.sort(sortedHand);
-		for (int i=0; i<sortedHand.size() - 3; i++){
-			for (int j=i+3; j<=sortedHand.size(); j++){
-				CardSet tryMatch = new CardSet(new ArrayList<Card>(sortedHand.subList(i, j)));
-				if (tryMatch.isRun()){
-					aMatchedSet.put(tryMatch, false);
-				}else{
-					break;
-				}
-			}
+		assert pCards != null;
+		if(!aUnmatchedCards.containsAll(pCards))
+		{
+			throw new HandException("Cards are not all from unmatched cards.");
 		}
-	}
-	
-	/*
-	 * Helper method for automatch
-	 */
-	private HashMap<Integer, HashSet<CardSet>> autoMatchRecurse(ArrayList<CardSet> pSets, 
-																ArrayList<Card> pCards){
-		if (pSets.isEmpty()) return new HashMap<Integer, HashSet<CardSet>>();
 		
-		HashMap<Integer, HashSet<CardSet>> result  = 
-				autoMatchRecurse(new ArrayList<CardSet>(pSets.subList(1, pSets.size())), 
-								 new ArrayList<Card>(pCards));
-		
-		// if first element can be put in
-		boolean isFree = true;
-		for (Card c : pSets.get(0)){
-			if (pCards.contains(c)){
-				isFree = false;
-				break;
-			}
+		Run newRun = new Run(pCards);
+		if(newRun.isValid())
+		{
+			aMatchedSets.add(newRun);
 		}
-		if (isFree){
-			int point = 0;
-			ArrayList<Card> inCards = new ArrayList<Card>(pCards);
-			for (Card c : pSets.get(0)){
-				inCards.add(c);
-				point += c.getRank().ordinal();
-			}
-			HashMap<Integer, HashSet<CardSet>> tempResult = 
-					autoMatchRecurse(new ArrayList<CardSet>(pSets.subList(1, pSets.size())), inCards);
-			if (tempResult.isEmpty()){
-				HashSet<CardSet> resSet = new HashSet<CardSet>();
-				resSet.add(pSets.get(0));
-				result.put(point, resSet);
-			}else{
-				for (Integer i : tempResult.keySet()){
-					HashSet<CardSet> resSet = new HashSet<CardSet>(tempResult.get(i));
-					resSet.add(pSets.get(0));
-					result.put(point + i, resSet);
-				}
-			}
+		else 
+		{
+			throw new HandException("Not valid run.");
 		}
-		return result; 
 	}
 	
 	/**
@@ -288,21 +203,6 @@ public class Hand
 	 */
 	public void autoMatch()
 	{
-		if (aAutomatched) return; // matched already done.
-		aAutomatched = true;
-		
-		createGroup(aHand.keySet());
-		createRun(aHand.keySet());
-		
-		HashMap<Integer, HashSet<CardSet>> matches = 
-				autoMatchRecurse(new ArrayList<CardSet>(aMatchedSet.keySet()), new ArrayList<Card>());
-		
-		ArrayList<Integer> sortedPoints = new ArrayList<Integer>(matches.keySet());
-		Collections.sort(sortedPoints);
-		// Minimize deadwook = maximize points in the matches
-		for (CardSet s : matches.get(sortedPoints.get(sortedPoints.size() - 1))){
-			for (Card c : s) aHand.put(c, true);
-			aMatchedSet.put(s, true);
-		}
+		// TODO
 	}
 }
