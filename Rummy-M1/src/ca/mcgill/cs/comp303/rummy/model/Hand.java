@@ -1,5 +1,6 @@
 package ca.mcgill.cs.comp303.rummy.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -45,10 +46,12 @@ public class Hand
 		{
 			throw new HandException("Hand is complete.");
 		}
-		if(!aHand.add(pCard))
+		if(aHand.contains(pCard))
 		{
 			throw new HandException("Card is already in hand.");
 		}
+		aHand.add(pCard);
+		aUnmatchedCards.add(pCard);
 	}
 	
 	/**
@@ -61,7 +64,20 @@ public class Hand
 	public void remove( Card pCard )
 	{
 		assert pCard != null;
-		aHand.remove(pCard);
+		if(aHand.contains(pCard))
+		{
+			aHand.remove(pCard);
+			aUnmatchedCards.remove(pCard);
+			ICardSet toBeRemoved = null;
+			for(ICardSet cs : aMatchedSets)
+			{
+				if(cs.contains(pCard))
+				{
+					toBeRemoved = cs;
+				}
+			}
+			aMatchedSets.remove(toBeRemoved);
+		}
 	}
 	
 	/**
@@ -82,6 +98,8 @@ public class Hand
 	public void clear()
 	{
 		aHand.clear();
+		aUnmatchedCards.clear();
+		aMatchedSets.clear();
 	}
 	
 	/**
@@ -164,6 +182,7 @@ public class Hand
 		if(newGroup.isValid())
 		{
 			aMatchedSets.add(newGroup);
+			aUnmatchedCards.removeAll(pCards);
 		}
 		else 
 		{
@@ -190,6 +209,7 @@ public class Hand
 		if(newRun.isValid())
 		{
 			aMatchedSets.add(newRun);
+			aUnmatchedCards.removeAll(pCards);
 		}
 		else 
 		{
@@ -204,5 +224,186 @@ public class Hand
 	public void autoMatch()
 	{
 		// TODO
+		Node<Hand> tree = matchSets(copy());
+		Hand lowestScoringHand = getLowestHand(tree);
+		aHand = lowestScoringHand.aHand;
+		aUnmatchedCards = lowestScoringHand.aUnmatchedCards;
+		aMatchedSets = lowestScoringHand.aMatchedSets;
+	}
+
+	private Hand getLowestHand( Node<Hand> pTree ) 
+	{
+		if(pTree.getChildren().size() == 0)
+		{
+			return pTree.get();
+		}
+		
+
+		Hand minHand = null;
+		
+		// Find lowest scoring child
+		for(Node<Hand> child : pTree.getChildren())
+		{
+			Hand lowestGrandChild = getLowestHand(child);
+			if(child.get().score() < lowestGrandChild.score())
+			{
+				minHand = child.get();
+			}
+			else
+			{
+				minHand = lowestGrandChild;
+			}
+		}
+		
+		// Compare with parent
+		if(pTree.get().score() < minHand.score())
+		{
+			return pTree.get();
+		}
+		else
+		{
+			return minHand;
+		}
+	}
+	
+	private Node<Hand> matchSets( Hand pHand )
+	{
+		if(pHand.aUnmatchedCards.size() < 3)
+		{
+			return null;
+		}
+		
+		Node<Hand> node = new Node<Hand>(pHand);
+		for(Set<Card> group : pHand.getPossibleGroups())
+		{
+			Hand childHand = pHand.copy();
+			childHand.createGroup(group);
+			node.add(matchSets(childHand));
+		}
+		
+		for(Set<Card> runs : pHand.getAllRuns())
+		{
+			node.get().createRun(runs);
+		}
+		return node;
+	}
+	
+	private ArrayList<Set<Card>>getPossibleGroups()
+	{
+		ArrayList<Set<Card>> returnList = new ArrayList<Set<Card>>();
+		int[] numberOfAppearance = new int[Card.NUMBER_OF_RANKS];
+		for(Card c : aUnmatchedCards)
+		{
+			numberOfAppearance[c.getRank().ordinal()]++;
+		}
+		
+		for(int i = 0; i < numberOfAppearance.length; i++)
+		{
+			if(numberOfAppearance[i] == 4)
+			{
+				Set<Card> fourOfAKind = new HashSet<Card>();
+				Set<Card> threeOfAKind = new HashSet<Card>();
+				for(Card c : aUnmatchedCards)
+				{
+					if(c.getRank().ordinal() == i)
+					{
+						fourOfAKind.add(c);
+						if(threeOfAKind.size() < 3)
+						{
+							threeOfAKind.add(c);
+						}
+					}
+				}
+				returnList.add(fourOfAKind);
+				returnList.add(threeOfAKind);
+			}
+			else if(numberOfAppearance[i] == 3)
+			{
+				Set<Card> threeOfAKind = new HashSet<Card>();
+				for(Card c : aUnmatchedCards)
+				{
+					if(c.getRank().ordinal() == i)
+					{
+						threeOfAKind.add(c);
+					}
+				}
+				returnList.add(threeOfAKind);
+			}
+			else
+			{
+				continue;
+			}
+		}
+		return returnList;
+	}
+	
+	private ArrayList<Set<Card>>getAllRuns()
+	{
+		ArrayList<Set<Card>> returnList = new ArrayList<Set<Card>>();
+		int[] numberOfAppearance = new int[Card.NUMBER_OF_RANKS];
+		for(Card c : aUnmatchedCards)
+		{
+			numberOfAppearance[c.getRank().ordinal()]++;
+		}
+		
+		Set<Card> workingCards = new HashSet<Card>(aUnmatchedCards);
+		for(int i = 0; i < numberOfAppearance.length; i++)
+		{
+			if(i + 2 >= numberOfAppearance.length)
+			{
+				break;
+			}
+			if(numberOfAppearance[i] > 0 && numberOfAppearance[i + 1] > 0 && numberOfAppearance[i + 2] > 0)
+			{
+				Set<Card> runToAdd = new HashSet<Card>();
+				for(int j = i; j < i + 3; j++)
+				{
+					Card found = null;
+					for(Card c : workingCards)
+					{
+						if(c.getRank().ordinal() == j)
+						{
+							runToAdd.add(c);
+							found = c;
+							numberOfAppearance[j]--;
+							break;
+						}
+					}
+					workingCards.remove(found);
+				}
+				returnList.add(runToAdd);
+			}
+		}
+		
+		for(Card c : workingCards)
+		{
+			Set<Card> toRemove = null;
+			for(Set<Card> run : returnList)
+			{
+				Set<Card> possibleRun = new HashSet<Card>(run);
+				possibleRun.add(c);
+				if(new Run(possibleRun).isValid())
+				{
+					toRemove = run;
+					returnList.add(possibleRun);
+					break;
+				}
+			}
+			if(toRemove != null)
+			{
+				returnList.remove(toRemove);
+			}
+		}
+		
+		return returnList;
+	}
+	
+	private Hand copy()
+	{
+		Hand returnHand = new Hand();
+		returnHand.aHand = new HashSet<Card>(aHand);
+		returnHand.aMatchedSets = new HashSet<ICardSet>(aMatchedSets);
+		returnHand.aUnmatchedCards = new HashSet<Card>(aUnmatchedCards);
+		return returnHand;
 	}
 }

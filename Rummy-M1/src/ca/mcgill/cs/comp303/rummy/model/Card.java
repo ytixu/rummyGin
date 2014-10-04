@@ -5,6 +5,9 @@ package ca.mcgill.cs.comp303.rummy.model;
  */
 public final class Card implements Comparable<Card>
 {
+	public static final int NUMBER_OF_RANKS = 13;
+	public static final int NUMBER_OF_SUITS = 4;
+	
 	/**
 	 * Magic number used to compute the hashcode. 
 	 */
