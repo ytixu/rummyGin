@@ -1,51 +1,67 @@
 package ca.mcgill.cs.comp303.rummy.model;
 
-import java.util.Iterator;
-
 /**
- * A player. 
+ * Abstract class, extend by humanPlayer and AIPlayer.
  * @author Yi Tian
  *
  */
-public class Player implements ICardSet 
+abstract class Player 
 {
-	private Hand aHand = new Hand();
+	private Hand aHand;
 	
-	@Override
-	public Iterator<Card> iterator() 
+	/**
+	 * Constructor.
+	 */
+	public Player()
 	{
-		// TODO Auto-generated method stub
-		return null;
+		aHand = new Hand();
 	}
-
-	@Override
-	public boolean contains(Card pCard) 
+	
+	/**
+	 * Get the score for this hand.
+	 */
+	public int getScore()
 	{
-		if (aHand.contains(pCard))
-		{
-			return true;
-		}
-		return false;
+		return aHand.score();
 	}
-
-	@Override
-	public int size() 
+	
+	/**
+	 * Draw from the deck.
+	 * @throws HandException if hand is complete 
+	 * @param pDeck
+	 */
+	public void draw(Deck pDeck)
 	{
-		return aHand.size();
+		// TODO
 	}
-
-	@Override
-	public boolean isGroup() 
+	
+	/**
+	 * Discard a card.
+	 * @throws HandException if discard card was just picked up from the discard pile. 
+	 * @param pCard
+	 */
+	public void discard(Card pCard)
 	{
-		// TODO Auto-generated method stub
-		return false;
+		// TODO
 	}
-
-	@Override
-	public boolean isRun() 
+	
+	/**
+	 * Layout all the cards after the opponent knocks.
+	 * Match to runs and groups and extend deadwook to opponent's matches. 
+	 */
+	public void layout()
 	{
-		// TODO Auto-generated method stub
-		return false;
+		// TODO
 	}
-
+	
+	/**
+	 * Kocking. 
+	 */
+	abstract void knock();
+	
+	/**
+	 * Player plays its turn, including drawing, discarding, knocking.
+	 */
+	abstract void play();
+	
 }
