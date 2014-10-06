@@ -8,6 +8,8 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import ca.mcgill.cs.comp303.rummy.model.Card.Rank;
+
 
 /**
  * Models a hand of 10 cards. The hand is not sorted. Not threadsafe.
@@ -38,8 +40,9 @@ public class Hand
 		aHand = new HashMap<Card, Boolean>();
 	}
 	
-	/*
-	 * Get a list of the card in the hand (used only for debug)
+	/**
+	 * Get a list of the card in the hand (used only for debug).
+	 * @return a set of cards
 	 */
 	public Set<Card> getHand()
 	{
@@ -59,8 +62,9 @@ public class Hand
 		}
 	}
 	
-	/*
+	/**
 	 * Check if automatch has already been called
+	 * @return True if automatched has been called for a hand 
 	 */
 	public boolean isMatched()
 	{
@@ -204,7 +208,8 @@ public class Hand
 		{
 			if (!(boolean) cs.getValue())
 			{
-				score += cs.getKey().getRank().ordinal();
+				score += (cs.getKey().getRank().compareTo(Rank.TEN) < 0) ? 
+						cs.getKey().getRank().ordinal() + 1 : Rank.JACK.ordinal();
 			}
 		}
 		return score;

@@ -35,18 +35,25 @@ public class TestHand
 							new Card(Rank.ACE, Suit.DIAMONDS),
 							new Card(Rank.EIGHT, Suit.DIAMONDS)};
 		// optimal combination is [k,q,j,10,9], [q,q,q]
-		aScore = 7;
+		aScore = 9;
 		aHand = new Hand();
-		for (int i=0; i < aCards.length; i++) aHand.add(aCards[i]);
+		for (int i = 0; i < aCards.length; i++)
+		{
+			aHand.add(aCards[i]);
+		}
 		aUnmatched = new HashSet<Card>();
 		aUnmatched.add(aCards[9]);
 		aUnmatched.add(aCards[8]);
 		aSingleCard = new Card(Rank.FOUR, Suit.HEARTS);
 	}
 	
+	/**
+	 * 
+	 */
 	@Test
-	public void testAdd(){
-		for (int i=0; i < aCards.length; i++)
+	public void testAdd()
+	{
+		for (int i = 0; i < aCards.length; i++)
 		{
 			assertTrue(aHand.contains(aCards[i])); 
 		}
@@ -54,7 +61,8 @@ public class TestHand
 	}
 	
 	@Test
-	public void testAutoMatch(){
+	public void testAutoMatch()
+	{
 		assertFalse(aHand.isMatched());
 		long time = System.currentTimeMillis();
 		aHand.autoMatch();
@@ -63,16 +71,21 @@ public class TestHand
 		assertTrue(aHand.isMatched());
 		aHand.autoMatch();
 		assertTrue(100 > time);
-		for (CardSet s : matchedSet){
-			for (Card c : s) assertFalse(aUnmatched.contains(c));
+		for (CardSet s : matchedSet)
+		{
+			for (Card c : s)
+			{
+				assertFalse(aUnmatched.contains(c));
+			}
 		}
 		System.out.println(matchedSet.toString());
-		System.out.println(time + " miliseconds");
+		System.out.println(time + " miliseconds" +  aHand.score());
 		assertEquals(aScore, aHand.score());
 	}
 	
 	@Test
-	public void testRemove(){
+	public void testRemove()
+	{
 		aHand.autoMatch();
 		aHand.remove(aCards[0]);
 		assertFalse(aHand.isComplete());
@@ -88,23 +101,27 @@ public class TestHand
 	}
 	
 	@Test 
-	public void testUnmatched(){
+	public void testUnmatched()
+	{
 		aHand.autoMatch();
 		Set<Card> unmatched = aHand.getUnmatchedCards();
-		for (Card c : unmatched){
+		for (Card c : unmatched)
+		{
 			assertTrue(aUnmatched.contains(c));
 		}
 		assertEquals(aUnmatched.size(), unmatched.size());
 	}
 	
 	@Test(expected=HandException.class)
-	public void testAddComplete(){
+	public void testAddComplete()
+	{
 		assertTrue(aHand.isComplete());
 		aHand.add(aSingleCard);
 	}
 	
 	@Test(expected=HandException.class)
-	public void testAddAlreadyIn(){
+	public void testAddAlreadyIn()
+	{
 		aHand.remove(aCards[0]);
 		assertTrue(aHand.contains(aCards[1]));
 		aHand.add(aCards[1]);
