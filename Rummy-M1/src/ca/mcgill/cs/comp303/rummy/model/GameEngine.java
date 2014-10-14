@@ -1,6 +1,5 @@
 package ca.mcgill.cs.comp303.rummy.model;
 
-import java.util.List;
 import java.util.Stack;
 
 /**
@@ -8,27 +7,36 @@ import java.util.Stack;
  * @author Yi Tian
  *
  */
-public class GameEngine 
+public class GameEngine
 {
-	private Player aHuman;
-	private Player aBot;
+	// states
+	private Player[] aPlayers;
 	private Deck aDeck;
 	private Stack<Card> aDiscard;
+	private int aTurn; 
+	
+	private GameObserver[] aLoggers;
 	
 	/**
 	 * Constructor.
 	 */
 	public GameEngine()
 	{
-		// TODO
+		aPlayers = new Player[2];
+		aDeck = new Deck();
+		aDiscard = new Stack<Card>();
+		aTurn = -1;
 	}
 	
 	/**
 	 * Add a player to the game.
+	 * @param pPlayer1
+	 * @param pPlayer2
 	 */
-	public void addPlayer()
+	public void setPlayers(Player pPlayer1, Player pPlayer2)
 	{
-		// TODO
+		aPlayers[0] = pPlayer1;
+		aPlayers[1] = pPlayer2;
 	}
 	
 	/**
@@ -36,25 +44,62 @@ public class GameEngine
 	 * Distributes cards to players until both hands are complete.
 	 * Start the discard pile.
 	 */
-	public void newName()
+	public void newGame()
 	{
-		// TODO
+		aDeck.shuffle();
+		for (Player p : aPlayers)
+		{
+			p.clearHand();
+		}
+		int drawTurn = aTurn;
+		if (aTurn == -1)
+		{
+			drawTurn = 0;
+		}
+		while(!aPlayers[drawTurn].isComplete())
+		{	
+			aPlayers[drawTurn].draw(aDeck.draw());
+			aPlayers[1-drawTurn].draw(aDeck.draw());
+		}
+		aDiscard.add(aDeck.draw());
+		if (aTurn == -1) 
+		{
+			setTurn();
+		}
+	}
+	
+	/*
+	 * Only called on the first hand.
+	 */
+	private void setTurn()
+	{
+		Card lowest = null;
+		aTurn = 1;
+		for (Card c: aPlayers[0].getHand())
+		{
+			if (lowest == null || lowest.compareTo(c) == 1)
+			{
+				lowest = c;
+			}
+		}
+		for (Card c: aPlayers[1].getHand())
+		{
+			if (lowest.compareTo(c) == 1)
+			{
+				aTurn = 0;
+				return;
+			}
+		}
 	}
 	
 	/**
-	 * Get human player.
+	 * Get the player for the next turn. 
+	 * @return the player
 	 */
-	public void getHumanPlayer()
+	public Player getNextPlayer()
 	{
-		// TODO
-	}
-	
-	/**
-	 * Get AI agent. 
-	 */
-	public void getBotPlayer()
-	{
-		
+		aTurn = 1-aTurn;
+		return aPlayers[aTurn];
 	}
 	
 	/**
@@ -74,14 +119,9 @@ public class GameEngine
 	}
 	
 	/*
-	 * Output actions to screen
+	 * Notify loggers.
 	 */
 	private void log()
-	{
-		// TODO
-	}
-	
-	public static void main(String[] args)
 	{
 		// TODO
 	}

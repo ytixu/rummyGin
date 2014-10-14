@@ -1,5 +1,7 @@
 package ca.mcgill.cs.comp303.rummy.model;
 
+import java.util.Set;
+
 /**
  * Abstract class, extend by humanPlayer and AIPlayer.
  * @author Yi Tian
@@ -18,6 +20,23 @@ abstract class Player
 	}
 	
 	/**
+	 * Check if hand has 10 cards.
+	 * @return
+	 */
+	public boolean isComplete()
+	{
+		return aHand.isComplete();
+	}
+	
+	/**
+	 * Reset the hand.
+	 */
+	public void clearHand()
+	{
+		aHand.clear();
+	}
+	
+	/**
 	 * Get the score for this hand.
 	 */
 	public int getScore()
@@ -25,14 +44,19 @@ abstract class Player
 		return aHand.score();
 	}
 	
+	public Set<Card> getHand()
+	{
+		return aHand.getHand();
+	}
+	
 	/**
 	 * Draw from the deck.
 	 * @throws HandException if hand is complete 
-	 * @param pDeck
+	 * @param pCard
 	 */
-	public void draw(Deck pDeck)
+	public void draw(Card pCard)
 	{
-		// TODO
+		aHand.add(pCard);
 	}
 	
 	/**
@@ -42,7 +66,8 @@ abstract class Player
 	 */
 	public void discard(Card pCard)
 	{
-		// TODO
+		aHand.remove(pCard);
+		//TODO: Need to add pCard to discard stack
 	}
 	
 	/**
