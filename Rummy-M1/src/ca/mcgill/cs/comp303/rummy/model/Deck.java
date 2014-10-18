@@ -1,7 +1,7 @@
 package ca.mcgill.cs.comp303.rummy.model;
 
 import java.util.Collections;
-import java.util.Stack;
+import java.util.ArrayList;
 
 import ca.mcgill.cs.comp303.rummy.model.Card.Rank;
 import ca.mcgill.cs.comp303.rummy.model.Card.Suit;
@@ -11,21 +11,17 @@ import ca.mcgill.cs.comp303.rummy.model.Card.Suit;
  */
 public class Deck 
 {
-	private Stack<Card> aCards;
+	private static int SIZE = 52;
+	
+	private ArrayList<Card> aCards; 
+	private int aTopCard;
 	
 	/**
 	 * Creates a new deck of 52 cards, shuffled.
 	 */
 	public Deck()
 	{
-		aCards = new Stack<Card>();
-		reset();
-		shuffle();
-	}
-	
-	private void reset()
-	{
-		aCards.clear();
+		aCards = new ArrayList<Card>();
 		for( Suit lSuit : Suit.values() )
 		{
             for( Rank lRank : Rank.values() )
@@ -33,6 +29,12 @@ public class Deck
                 aCards.add( new Card( lRank, lSuit ));
             }
 		}
+		shuffle();
+	}
+	
+	private void reset()
+	{
+		aTopCard = SIZE;
 	}
 
 	/**
@@ -54,7 +56,8 @@ public class Deck
 	public Card draw()
 	{
 		assert size() > 0;
-		return aCards.pop();
+		aTopCard --;
+		return aCards.get(aTopCard);
 	}
 	
 	/**
@@ -63,6 +66,6 @@ public class Deck
 	 */
 	public int size()
 	{
-		return aCards.size();
+		return aTopCard;
 	}
 }
