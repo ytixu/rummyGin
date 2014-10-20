@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.Set;
 
@@ -20,8 +21,8 @@ import ca.mcgill.cs.comp303.rummy.model.Card.Rank;
  */
 public class Hand
 {	
-	private static final int HANDSIZE = 10;
-	private HashMap<Card, Boolean> aHand;
+	protected static final int HANDSIZE = 10;
+	protected HashMap<Card, Boolean> aHand;
 	
 	/*
 	 * A set of CardSet
@@ -29,7 +30,9 @@ public class Hand
 	 * But at each time a new card is added (and another card is removed), this must be rebuilt
 	 * Might think of a better way to keep previous solution
 	 */
-	private HashMap<CardSet, Boolean> aMatchedSet;
+	protected HashMap<CardSet, Boolean> aMatchedSet;
+	
+	protected int aScore;
 		
 	/**
 	 * Creates a new, empty hand.
@@ -38,6 +41,7 @@ public class Hand
 	{
 		aMatchedSet = new HashMap<CardSet, Boolean>();
 		aHand = new HashMap<Card, Boolean>();
+		aScore = 0;
 	}
 	
 	/**
@@ -49,11 +53,10 @@ public class Hand
 		return aHand.keySet();
 	}
 	
-	
 	/*
-	 * Prepare to call autoMatch again
+	 * Prepare to call autoMatch again.
 	 */
-	private void reset()
+	protected void reset()
 	{
 		aMatchedSet.clear();
 		for (Card c : aHand.keySet())
@@ -201,18 +204,22 @@ public class Hand
 	/**
 	 * @return The total point value of the unmatched cards in this hand.
 	 */
-	public int score()
+	protected void calculateScore()
 	{
-		int score = 0;
+		aScore = 0;
 		for (Entry<Card, Boolean> cs : aHand.entrySet())
 		{
 			if (!(boolean) cs.getValue())
 			{
-				score += (cs.getKey().getRank().compareTo(Rank.TEN) < 0) ? 
+				aScore += (cs.getKey().getRank().compareTo(Rank.TEN) < 0) ? 
 						cs.getKey().getRank().ordinal() + 1 : Rank.JACK.ordinal();
 			}
 		}
-		return score;
+	}
+	
+	public int score()
+	{
+		return aScore;
 	}
 	
 	/**
@@ -290,7 +297,7 @@ public class Hand
 	/*
 	 * Helper method for automatch
 	 */
-	private HashMap<Integer, HashSet<CardSet>> autoMatchRecurse(ArrayList<CardSet> pSets, 
+	protected HashMap<Integer, HashSet<CardSet>> autoMatchRecurse(ArrayList<CardSet> pSets, 
 																ArrayList<Card> pCards)
 	{
 		if (pSets.isEmpty())
@@ -370,5 +377,22 @@ public class Hand
 			}
 			aMatchedSet.put(s, true);
 		}
+		calculateScore();
+	}
+	
+	/**
+	 * Check if the score is enough to knock.
+	 * @return
+	 * @pre isMatched()
+	 */
+	public boolean canKnock()
+	{
+		assert isMatched();
+		
+		if (score() <= HANDSIZE)
+		{
+			return true;
+		}
+		return false;
 	}
 }
