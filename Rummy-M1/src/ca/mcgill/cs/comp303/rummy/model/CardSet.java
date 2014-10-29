@@ -6,11 +6,15 @@ import java.util.Iterator;
 /**
  * A immutable set of cards with factory.
  * @author Yi Tian
- *
+ * @inv size >= 3
  */
 	
 public class CardSet implements ICardSet 
 {
+	private enum SetType 
+	{ GRP, RUN, IDIOT }
+	
+	private SetType aGroupOrRunID;
 	
 	// Assume that the cards are sorted and has at least 3 elements
 		
@@ -24,6 +28,7 @@ public class CardSet implements ICardSet
 	{
 		//assume that the cards are distinct
 		aSet = pCards;
+		aGroupOrRunID = SetType.IDIOT;
 	}
 	
 	@Override
@@ -54,7 +59,10 @@ public class CardSet implements ICardSet
 	@Override
 	public boolean isGroup() 
 	{
-		// if (size() < 3) return false;
+		if (aGroupOrRunID.equals(SetType.GRP))
+		{
+			return true;
+		}
 		// linear scan
 		int rank = -1;
 		for (Card c : this)
@@ -68,13 +76,17 @@ public class CardSet implements ICardSet
 				return false;
 			}
 		}
+		aGroupOrRunID = SetType.GRP;
 		return true;
 	}
 
 	@Override
 	public boolean isRun() 
 	{
-		// if (size() < 3) return false;
+		if (aGroupOrRunID.equals(SetType.RUN))
+		{
+			return true;
+		}
 		// linear scan, since we assume sorted order 
 		for (int i = 0; i<size()-1; i++)
 		{
@@ -83,6 +95,7 @@ public class CardSet implements ICardSet
 				return false;
 			}
 		}
+		aGroupOrRunID = SetType.RUN;
 		return true;
 	}
 	

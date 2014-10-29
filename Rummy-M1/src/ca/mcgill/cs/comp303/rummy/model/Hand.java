@@ -146,6 +146,10 @@ public class Hand
 	 */
 	public Set<CardSet> getMatchedSets() // changed input type Set<ICardSet>
 	{
+		if (size() < HANDSIZE || !isMatched())
+		{
+			autoMatch();
+		}
 		HashSet<CardSet> matchedSets = new HashSet<CardSet>();
 		for (Entry<CardSet, Boolean> cs : aMatchedSet.entrySet())
 		{
@@ -160,6 +164,7 @@ public class Hand
 	
 	/**
 	 * @return A copy of the set of unmatched cards.
+	 * @pre isMatched() must be true
 	 */
 	public Set<Card> getUnmatchedCards()
 	{
