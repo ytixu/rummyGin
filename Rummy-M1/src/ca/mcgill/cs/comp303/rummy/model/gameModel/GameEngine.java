@@ -103,18 +103,26 @@ public class GameEngine implements GameModelPlayer
 	 * Get the player for the next turn. 
 	 * @return the player
 	 */
-	public Player getNextPlayer()
+	private Player getNextPlayer()
 	{
 		aTurn = 1-aTurn;
 		return aPlayers[aTurn];
 	}
-	
-	public void endGameWithKnock()
+
+	/**
+	 * If a player knocked. We 
+	 */
+	private void endGameWithKnock()
 	{
 		// TODO
 	}
 	
-	public boolean moreThanTwoCardsLeft()
+	private void endGame()
+	{
+		
+	}
+	
+	private boolean moreThanTwoCardsLeft()
 	{
 		if (aDeck.size() > 2)
 		{
@@ -122,6 +130,28 @@ public class GameEngine implements GameModelPlayer
 		}
 		return true;
 	}
+	
+	/**
+	 * 
+	 */
+	public void start()
+	{
+		boolean canPlay = true;
+		while(canPlay)
+		{
+			if (getNextPlayer().play(this))
+			{
+				canPlay = false;
+				endGameWithKnock();
+			}
+			if (!moreThanTwoCardsLeft())
+			{
+				canPlay = false;
+				endGame();
+			}
+		}
+	}
+	
 	
 	/**
 	 * Save a game.
@@ -195,12 +225,6 @@ public class GameEngine implements GameModelPlayer
 		GameEngine ge = new GameEngine();
 		ge.setPlayers(new RandomPlayer(), new RobotPlayer());
 		ge.newGame();
-		while(ge.moreThanTwoCardsLeft())
-		{
-			if (ge.getNextPlayer().play(ge))
-			{
-				
-			}
-		}
+		ge.start();
 	}
 }
