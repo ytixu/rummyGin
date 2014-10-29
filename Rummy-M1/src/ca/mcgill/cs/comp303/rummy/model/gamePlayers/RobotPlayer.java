@@ -2,8 +2,10 @@ package ca.mcgill.cs.comp303.rummy.model.gamePlayers;
 
 import java.util.AbstractMap.SimpleEntry;
 import java.util.Random;
+import java.util.Set;
 
 import ca.mcgill.cs.comp303.rummy.model.Card;
+import ca.mcgill.cs.comp303.rummy.model.CardSet;
 import ca.mcgill.cs.comp303.rummy.model.gameModel.GameModelPlayer;
 
 /**
@@ -13,7 +15,7 @@ import ca.mcgill.cs.comp303.rummy.model.gameModel.GameModelPlayer;
  * @author Yi Tian
  *
  */
-public class RobotPlayer extends Player 
+public class RobotPlayer extends AbstractPlayer 
 {
 	private static Random rnd = new Random();
 	private static final short SCORE_THD = 5;

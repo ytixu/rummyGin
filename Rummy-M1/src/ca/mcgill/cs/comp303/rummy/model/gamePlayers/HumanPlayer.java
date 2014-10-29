@@ -7,7 +7,7 @@ import ca.mcgill.cs.comp303.rummy.model.gameModel.GameModelPlayer;
  * @author Yi Tian
  *
  */
-public class HumanPlayer extends Player 
+public class HumanPlayer extends AbstractPlayer 
 {
 
 	/**
@@ -20,7 +20,7 @@ public class HumanPlayer extends Player
 	}
 
 	@Override
-	boolean play(GameModelPlayer pModel) 
+	public boolean play(GameModelPlayer pModel) 
 	{
 		// TODO Auto-generated method stub
 		return false;

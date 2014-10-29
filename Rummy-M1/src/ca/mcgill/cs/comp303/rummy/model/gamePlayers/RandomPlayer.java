@@ -10,7 +10,7 @@ import ca.mcgill.cs.comp303.rummy.model.gameModel.GameModelPlayer;
  * @author ytixu
  *
  */
-public class RandomPlayer extends Player 
+public class RandomPlayer extends AbstractPlayer 
 {
 	private static Random rnd = new Random();
 	
