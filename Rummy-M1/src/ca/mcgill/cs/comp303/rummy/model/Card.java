@@ -78,17 +78,27 @@ public final class Card implements Comparable<Card>
 	 */
 	public int compareTo(Card pCard)
 	{
-		if(hashCode() < pCard.hashCode()) 
+		if(getRank().compareTo(pCard.getRank()) < 0) 
 		{
 			return -1;
 		}
-		else if (hashCode() > pCard.hashCode())
+		else if (getRank().compareTo(pCard.getRank()) > 0)
 		{
 			return 1;
 		}
 		else
 		{
-			return 0;
+			if (getSuit().compareTo(pCard.getSuit()) < 0)
+			{
+				return -1;
+			}
+			else if (getSuit().compareTo(pCard.getSuit()) > 0)
+			{
+				return 1;
+			}
+			else {
+				return 0;
+			}
 		}
 	}
 
@@ -105,9 +115,13 @@ public final class Card implements Comparable<Card>
 		{
 			return false;
 		}
-		if(pCard instanceof Card)
+		if (pCard == this)
 		{
-			return compareTo((Card) pCard) == 0;
+			return true;
+		}
+		if(getClass() == pCard.getClass())
+		{
+			return hashCode() == ((Card) pCard).hashCode();
 		}
 		return false;
 	}

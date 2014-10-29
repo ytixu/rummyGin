@@ -37,8 +37,8 @@ public class TestCard
 		Card smallCard = new Card(Rank.ACE, Suit.CLUBS);
 		assertEquals(0, aCard.compareTo(aCard));
 		assertEquals(1, aCard.compareTo(smallCard));
-		assertEquals(true, aCard.equals(aCard));
-		assertEquals(false, aCard.equals(smallCard));
+		assertTrue(aCard.equals(aCard));
+		assertFalse(aCard.equals(smallCard));
 	}
 	
 	@Test
@@ -52,9 +52,9 @@ public class TestCard
 	@Test
 	public void testEquals()
 	{
-		assertEquals(true, aCard.equals(AllCards.CAS));
-		assertEquals(false, aCard.equals(null));
+		assertTrue(aCard.equals(AllCards.CAS));
+		assertFalse(aCard.equals(null));
 		// Random object used to compared
-		assertEquals(false, aCard.equals(AllCards.CAS.getClass()));
+		assertFalse(aCard.equals(AllCards.CAS.getClass()));
 	}
 }
