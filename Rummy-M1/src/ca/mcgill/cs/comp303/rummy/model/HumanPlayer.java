@@ -11,13 +11,16 @@ public class HumanPlayer extends Player {
 	@Override
 	Card discard() {
 		// TODO Auto-generated method stub
-		return null;
+		Card toRemove = aHand.getUnmatchedCards().iterator().next();
+		aHand.remove(toRemove);
+		return toRemove;
+//		return null;
 	}
 
 	@Override
 	PILE draw() {
 		// TODO Auto-generated method stub
-		return null;
+		return PILE.DECK;
 	}
 
 	@Override

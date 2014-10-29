@@ -28,7 +28,7 @@ public class GameEngine implements GameViewer
 		firstDeal();
 		while(!isGameOver()) 
 		{
-			play(aPlayers.get(2));
+			play(aPlayers.get(0));
 			play(aPlayers.get(1));
 		}
 	}
@@ -60,7 +60,12 @@ public class GameEngine implements GameViewer
 	
 	public void play(Player pPlayer) 
 	{
-
+		// Don't do anything if game is over
+		if(isGameOver())
+		{
+			return;
+		}
+		
 		// Not a player from the game
 		if(!aPlayers.contains(pPlayer))
 		{
@@ -96,6 +101,10 @@ public class GameEngine implements GameViewer
 		PILE drawingPile = pPlayer.draw();
 		if(drawingPile.equals(PILE.DECK))
 		{
+			if(aDeck.size() < 3)
+			{
+				endGame();
+			}
 			Card toDraw = aDeck.draw();
 			pPlayer.getHand().add(toDraw);
 		}
@@ -130,12 +139,12 @@ public class GameEngine implements GameViewer
 		return aDiscardPile.peek();
 	}
 	
-	public Player getPlayer1() 
+	public Player getPlayer0() 
 	{
 		return aPlayers.get(0);
 	}
 	
-	public Player getPlayer2() 
+	public Player getPlayer1() 
 	{
 		return aPlayers.get(1);
 	}

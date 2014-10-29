@@ -5,9 +5,9 @@ import java.util.Set;
 
 public abstract class Player {
 
-	private Hand aHand;
+	protected Hand aHand;
 	private int aScore;
-	private GameViewer aGame;
+	protected GameViewer aGame;
 	
 	public Player(GameViewer pGame) {
 		aHand = new Hand();

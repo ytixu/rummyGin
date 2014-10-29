@@ -16,7 +16,7 @@ import ca.mcgill.cs.comp303.rummy.model.Card.Rank;
 public class Hand
 {
 	private static final int FACE_POINT = 10;
-	private static final int HAND_SIZE = 10;
+	private static final int HAND_SIZE = 11;
 	private Set<Card> aHand;
 	private Set<ICardSet> aMatchedSets;
 	private Set<Card> aUnmatchedCards;
