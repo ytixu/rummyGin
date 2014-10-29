@@ -24,12 +24,6 @@ public interface GameModelLogger
 	Object getTrun();
 	
 	/**
-	 * Check if a hand has terminated. 
-	 * @return
-	 */
-	boolean isEnd();
-	
-	/**
 	 * Get the scores for the players when the game ends. 
 	 * @return
 	 * @pre isEnd()

@@ -109,6 +109,20 @@ public class GameEngine implements GameModelPlayer
 		return aPlayers[aTurn];
 	}
 	
+	public void endGameWithKnock()
+	{
+		// TODO
+	}
+	
+	public boolean moreThanTwoCardsLeft()
+	{
+		if (aDeck.size() > 2)
+		{
+			return false;
+		}
+		return true;
+	}
+	
 	/**
 	 * Save a game.
 	 */
@@ -147,13 +161,6 @@ public class GameEngine implements GameModelPlayer
 	}
 
 	@Override
-	public boolean isEnd() 
-	{
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
 	public Object getScore() 
 	{
 		// TODO Auto-generated method stub
@@ -185,12 +192,15 @@ public class GameEngine implements GameModelPlayer
 	 */
 	public static void main(String[] deadliestBattleOfCOMP303ClassEver)
 	{
-//		GameEngine ge = new GameEngine();
-//		ge.setPlayers(new RandomPlayer(), new RobotPlayer());
-//		ge.newGame();
-//		while(!ge.isEnd())
-//		{
-//			ge.getNextPlayer().play();
-//		}
+		GameEngine ge = new GameEngine();
+		ge.setPlayers(new RandomPlayer(), new RobotPlayer());
+		ge.newGame();
+		while(ge.moreThanTwoCardsLeft())
+		{
+			if (ge.getNextPlayer().play(ge))
+			{
+				
+			}
+		}
 	}
 }
