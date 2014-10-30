@@ -19,7 +19,7 @@ public class KeyboardPlayer extends Player {
 	Card discard() 
 	{
 		System.out.println("Your current hand is: ");
-		Set<Card> hand = aHand.getUnmatchedCards();
+		Set<Card> hand = getHand().getUnmatchedCards();
 		int i = 1;
 		for(Card c : hand) 
 		{
@@ -50,9 +50,9 @@ public class KeyboardPlayer extends Player {
 	@Override
 	PILE draw() 
 	{
-		System.out.println("Top card of discard pile is: " + aGame.topOfStack().toString());
+		System.out.println("Top card of discard pile is: " + getGame().topOfStack().toString());
 		System.out.println("Your current hand is: ");
-		Set<Card> hand = aHand.getUnmatchedCards();
+		Set<Card> hand = getHand().getUnmatchedCards();
 		for(Card c : hand) 
 		{
 			System.out.println("\t" + c.toString());
@@ -62,7 +62,7 @@ public class KeyboardPlayer extends Player {
 		while(!(answer.equalsIgnoreCase("DECK") || answer.equalsIgnoreCase("DISCARD_PILE"))) 
 		{
 			System.out.println("Make sure you enter DECK or DISCARD_PILE");
-			System.out.println("Top card of discard pile is: " + aGame.topOfStack().toString());
+			System.out.println("Top card of discard pile is: " + getGame().topOfStack().toString());
 			System.out.println("Draw from DECK or DISCARD_PILE?");
 			answer = input.next();
 		}
@@ -80,16 +80,40 @@ public class KeyboardPlayer extends Player {
 	@Override
 	boolean knock() 
 	{
-		System.out.println("Want to knock? (Y/N)");
-		if(input.next().equalsIgnoreCase("Y") || input.next().equalsIgnoreCase("YES"))
+		if(!checkKnockable()) 
 		{
-			return true;
-		}
-		else 
-		{
-			System.out.println("Did not answer correctly, assumed NO");
 			return false;
 		}
+		
+		System.out.println("Want to knock? (Y/N)");
+		String answer = input.next();
+		while(!(answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("YES") || answer.equalsIgnoreCase("N") || answer.equalsIgnoreCase("NO")))
+		{
+			System.out.println("Please answer YES or NO");
+			answer = input.next();
+		}
+		return answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("YES");
+	}
+
+	@Override
+	boolean wantFirst()
+	{
+		System.out.println("Top card of discard pile is: " + getGame().topOfStack().toString());
+		System.out.println("Your current hand is: ");
+		Set<Card> hand = getHand().getUnmatchedCards();
+		for(Card c : hand) 
+		{
+			System.out.println("\t" + c.toString());
+		}
+		System.out.println("Want to take? (Y/N)");
+		String answer = input.next();
+		while(!(answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("YES") || answer.equalsIgnoreCase("N") || answer.equalsIgnoreCase("NO")))
+		{
+			System.out.println("Please answer YES or NO");
+			answer = input.next();
+		}
+		
+		return answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("YES");
 	}
 	
 }

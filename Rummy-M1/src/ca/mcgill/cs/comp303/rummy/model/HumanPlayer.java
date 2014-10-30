@@ -2,29 +2,37 @@ package ca.mcgill.cs.comp303.rummy.model;
 
 import ca.mcgill.cs.comp303.rummy.model.GameViewer.PILE;
 
-public class HumanPlayer extends Player {
+public class HumanPlayer extends Player 
+{
 
-	public HumanPlayer(GameViewer pGame) {
+	public HumanPlayer(GameViewer pGame) 
+	{
 		super(pGame);
 	}
 
 	@Override
-	Card discard() {
+	Card discard() 
+	{
 		// TODO Auto-generated method stub
-		Card toRemove = aHand.getUnmatchedCards().iterator().next();
-		aHand.remove(toRemove);
-		return toRemove;
-//		return null;
+		return null;
 	}
 
 	@Override
-	PILE draw() {
+	PILE draw() 
+	{
 		// TODO Auto-generated method stub
 		return PILE.DECK;
 	}
 
 	@Override
-	boolean knock() {
+	boolean knock() 
+	{
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	boolean wantFirst() {
 		// TODO Auto-generated method stub
 		return false;
 	}

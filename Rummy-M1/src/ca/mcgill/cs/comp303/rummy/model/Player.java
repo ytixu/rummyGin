@@ -5,21 +5,29 @@ import java.util.Set;
 
 public abstract class Player {
 
-	protected Hand aHand;
+	private Hand aHand;
 	private int aScore;
-	protected GameViewer aGame;
+	private GameViewer aGame;
 	
-	public Player(GameViewer pGame) {
+	public Player(GameViewer pGame) 
+	{
 		aHand = new Hand();
 		aScore = 0;
 		aGame = pGame;
 	}
 	
-	public Hand getHand() {
+	public Hand getHand() 
+	{
 		return aHand;
 	}
 	
-	public Card getLowestCard() {
+	public GameViewer getGame()
+	{
+		return aGame;
+	}
+	
+	public Card getLowestCard() 
+	{
 		Set<Card> hand = aHand.getUnmatchedCards();
 		Iterator<Card> it = hand.iterator();
 		Card i = it.next();
@@ -53,7 +61,18 @@ public abstract class Player {
 	 */
 	abstract boolean knock();
 	
-	public int getScore() {
+	/*
+	 * If a user wants to take the first card
+	 */
+	abstract boolean wantFirst();
+	
+	public int getScore() 
+	{
 		return aScore;
+	}
+	
+	protected boolean checkKnockable() 
+	{
+		return aHand.score() <= 10;
 	}
 }

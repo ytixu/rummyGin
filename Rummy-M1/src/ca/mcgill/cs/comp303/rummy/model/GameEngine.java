@@ -12,6 +12,7 @@ public class GameEngine implements GameViewer
 	private ArrayList<Player> aPlayers;
 	private boolean[] aPlayerTurn;
 	private boolean aGameEnded;
+	private Card lastDiscard;
 	
 	public GameEngine() 
 	{
@@ -55,7 +56,30 @@ public class GameEngine implements GameViewer
 		}
 		
 		aDiscardPile.push(aDeck.draw());
+		lastDiscard = topOfStack();
 		notifyObservers();
+		
+		for(int i = 0; i < 2; i++)
+		{
+			if(aPlayerTurn[i])
+			{
+				if(aPlayers.get(i).wantFirst())
+				{
+					drawFromDiscard(aPlayers.get(i));
+					discardCard(aPlayers.get(i));
+					aPlayerTurn[i] = false;
+					aPlayerTurn[(i+1)%2] = true;
+				}
+				if(aPlayers.get((i + 1)%2).wantFirst())
+				{
+					drawFromDiscard(aPlayers.get((i+1)%2));
+					discardCard(aPlayers.get((i+1)%2));
+					aPlayerTurn[(i+1)%2] = false;
+					aPlayerTurn[i] = true;
+				}
+				break;
+			}
+		}
 	}
 	
 	public void play(Player pPlayer) 
@@ -85,12 +109,8 @@ public class GameEngine implements GameViewer
 		// Discard card
 		discardCard(pPlayer);
 		
-		// Knock
-		if(pPlayer.knock()) 
-		{
-			endGame();
-		}
-		notifyObservers();
+		// Knock		
+		knockCheck(pPlayer);
 		
 		aPlayerTurn[playerIndex] = false;
 		aPlayerTurn[(playerIndex + 1) % 2] = true;
@@ -101,32 +121,75 @@ public class GameEngine implements GameViewer
 		PILE drawingPile = pPlayer.draw();
 		if(drawingPile.equals(PILE.DECK))
 		{
-			if(aDeck.size() < 3)
-			{
-				endGame();
-			}
-			Card toDraw = aDeck.draw();
-			pPlayer.getHand().add(toDraw);
+			drawFromDeck(pPlayer);
 		}
 		else
 		{
-			assert !aDiscardPile.isEmpty();
-			Card toDraw = aDiscardPile.pop();
-			pPlayer.getHand().add(toDraw);
+			drawFromDiscard(pPlayer);
 		}
 		notifyObservers();
+	}
+	
+	private void drawFromDeck(Player pPlayer)
+	{
+		if(aDeck.size() < 3)
+		{
+			endGame();
+		}
+		Card toDraw = aDeck.draw();
+		pPlayer.getHand().add(toDraw);
+	}
+	
+	private void drawFromDiscard(Player pPlayer)
+	{
+		assert !aDiscardPile.isEmpty();
+		Card toDraw = aDiscardPile.pop();
+		pPlayer.getHand().add(toDraw);	
 	}
 	
 	private void discardCard(Player pPlayer) 
 	{
 		Card toDiscard = pPlayer.discard();
+		while(toDiscard.equals(lastDiscard))
+		{
+//			try {
+//				throw new SameDiscardException();
+//			} catch (SameDiscardException e) {
+//				System.err.println(e.toString());
+//				discardCard(pPlayer);
+//			}
+			System.err.println("Cannot discard same card as previously discarded card!");
+			toDiscard = pPlayer.discard();
+		}
+		pPlayer.getHand().remove(toDiscard);
 		aDiscardPile.push(toDiscard);
+		lastDiscard = toDiscard;
 		notifyObservers();
+	}
+	
+	private void knockCheck(Player pPlayer)
+	{
+		if(pPlayer.knock()) 
+		{
+			calculatePoints();
+		}
+		if(aDeck.size() <= 2)
+		{
+			endGame();
+		}
+		notifyObservers();	
 	}
 	
 	public void endGame() 
 	{
 		aGameEnded = true;
+	}
+	
+	public void calculatePoints()
+	{
+		// Do some calculations
+		
+		endGame();
 	}
 	
 	public boolean isGameOver() 
