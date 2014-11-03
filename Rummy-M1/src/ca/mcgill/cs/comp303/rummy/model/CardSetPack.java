@@ -5,7 +5,7 @@ import java.util.Iterator;
 
 public class CardSetPack implements ICardSet 
 {
-	private CardSet aKnockerSet;
+	private ICardSet aKnockerSet;
 	private ArrayList<Card> aAppendTop;
 	private ArrayList<Card> aAppendBottom;
 	
@@ -59,7 +59,7 @@ public class CardSetPack implements ICardSet
 	 * 
 	 * @param pCardSet
 	 */
-	public CardSetPack(CardSet pCardSet)
+	public CardSetPack(ICardSet pCardSet)
 	{
 		aKnockerSet = pCardSet;
 		aAppendTop = new ArrayList<Card>();
@@ -122,6 +122,11 @@ public class CardSetPack implements ICardSet
 		aAppendBottom.add(pCard);
 	}
 
+	public String toString()
+	{
+		return aAppendTop.toString() + aKnockerSet.toString() + aAppendBottom.toString();
+		
+	}
 }
 
 

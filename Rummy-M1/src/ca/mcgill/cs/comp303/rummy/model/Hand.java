@@ -21,7 +21,7 @@ import ca.mcgill.cs.comp303.rummy.model.Card.Rank;
  */
 public class Hand
 {	
-	protected static final int HANDSIZE = 10;
+	public static final int HANDSIZE = 10;
 	protected HashMap<Card, Boolean> aHand;
 	
 	/*
@@ -144,13 +144,13 @@ public class Hand
 	/**
 	 * @return A copy of the set of matched sets
 	 */
-	public Set<CardSet> getMatchedSets() // changed input type Set<ICardSet>
+	public Set<ICardSet> getMatchedSets() // changed input type Set<ICardSet>
 	{
 		if (size() < HANDSIZE || !isMatched())
 		{
 			autoMatch();
 		}
-		HashSet<CardSet> matchedSets = new HashSet<CardSet>();
+		HashSet<ICardSet> matchedSets = new HashSet<ICardSet>();
 		for (Entry<CardSet, Boolean> cs : aMatchedSet.entrySet())
 		{
 			if ((boolean) cs.getValue())
@@ -401,3 +401,4 @@ public class Hand
 		return false;
 	}
 }
+
