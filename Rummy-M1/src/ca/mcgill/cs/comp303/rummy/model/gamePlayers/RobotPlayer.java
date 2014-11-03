@@ -6,6 +6,7 @@ import java.util.Set;
 
 import ca.mcgill.cs.comp303.rummy.model.Card;
 import ca.mcgill.cs.comp303.rummy.model.CardSet;
+import ca.mcgill.cs.comp303.rummy.model.ICardSet;
 import ca.mcgill.cs.comp303.rummy.model.gameModel.GameModelPlayer;
 
 /**
@@ -65,7 +66,7 @@ public class RobotPlayer extends AbstractPlayer
 		}
 		aHand.remove(result.getValue());
 		aHand.add(newCard);
-		pModel.discard(result.getValue());
+		pModel.setDiscard(result.getValue());
 		// check score
 		if (result.getKey() < SCORE_THD)
 		{

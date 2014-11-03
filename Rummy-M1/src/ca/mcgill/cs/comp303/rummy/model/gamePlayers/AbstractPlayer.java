@@ -8,7 +8,6 @@ import java.util.Set;
 import ca.mcgill.cs.comp303.rummy.model.Card;
 import ca.mcgill.cs.comp303.rummy.model.Card.Rank;
 import ca.mcgill.cs.comp303.rummy.model.Card.Suit;
-import ca.mcgill.cs.comp303.rummy.model.CardSet;
 import ca.mcgill.cs.comp303.rummy.model.CardSetPack;
 import ca.mcgill.cs.comp303.rummy.model.Hand;
 import ca.mcgill.cs.comp303.rummy.model.ICardSet;
@@ -23,6 +22,8 @@ public abstract class AbstractPlayer implements Player
 	protected Hand aHand;
 	protected String aName;
 	protected int aTurnNumber = 0;
+	protected int aLayoutScore = 0;
+	protected int aScore = 0;
 	
 	/**
 	 * Constructor.
@@ -31,6 +32,13 @@ public abstract class AbstractPlayer implements Player
 	{
 		aHand = new Hand();
 		aName = pName;
+	}
+	
+	public void reset(int pTurnNumber)
+	{
+		aHand.clear();
+		aLayoutScore = 0;
+		aTurnNumber = pTurnNumber;
 	}
 	
 	/**
@@ -51,6 +59,7 @@ public abstract class AbstractPlayer implements Player
 	 * Get the name of the player.
 	 * @return
 	 */
+	@Override
 	public String getName()
 	{
 		return aName;
@@ -60,6 +69,7 @@ public abstract class AbstractPlayer implements Player
 	 * Check if hand has 10 cards.
 	 * @return
 	 */
+	@Override
 	public boolean isComplete()
 	{
 		return aHand.isComplete();
@@ -73,12 +83,28 @@ public abstract class AbstractPlayer implements Player
 		aHand.clear();
 	}
 	
-	/**
-	 * Get the score for this hand.
-	 */
+	@Override
 	public int getScore()
 	{
+		return aScore;
+	}
+	
+	@Override
+	public int getLayoutScore()
+	{
+		return getScore() + aLayoutScore;
+	}
+	
+	@Override
+	public int getKnockingScore()
+	{
 		return aHand.score();
+	}
+	
+	@Override
+	public void updateScore(int pUpdate)
+	{
+		aScore += pUpdate;
 	}
 	
 	public Set<Card> getHand()
@@ -91,6 +117,7 @@ public abstract class AbstractPlayer implements Player
 	 * @throws HandException if hand is complete 
 	 * @param pCard
 	 */
+	@Override
 	public void draw(Card pCard)
 	{
 		aHand.add(pCard);
@@ -115,12 +142,12 @@ public abstract class AbstractPlayer implements Player
 	
 	
 	@Override
-	public Set<ICardSet> layout(Set<CardSet> pCardSets)
+	public Set<ICardSet> layout(Set<ICardSet> pCardSets)
 	{
 		Set<Card> deadwook = getDeadWook();
 		HashSet<ICardSet> result = new HashSet<ICardSet>();
 		
-		for (CardSet s : pCardSets)
+		for (ICardSet s : pCardSets)
 		{
 			CardSetPack newSet = new CardSetPack(s);
 			if (s.isGroup() && s.size() == 3)
@@ -131,6 +158,7 @@ public abstract class AbstractPlayer implements Player
 					if (c.getRank().equals(rank))
 					{
 						newSet.appendBottom(c);
+						aLayoutScore -= Math.min(c.getRank().ordinal() + 1, 10);
 						break;
 					}
 				}
@@ -160,12 +188,14 @@ public abstract class AbstractPlayer implements Player
 					if (tempRank == bRank)
 					{
 						newSet.appendTop(c);
+						aLayoutScore -= Math.min(c.getRank().ordinal() + 1, 10);
 						bRank --;
 					}
 					// check end
 					else if (tempRank == eRank)
 					{
 						newSet.appendBottom(c);
+						aLayoutScore -= Math.min(c.getRank().ordinal() + 1, 10);
 						eRank ++;
 					}
 				}
@@ -183,7 +213,7 @@ public abstract class AbstractPlayer implements Player
 	}
 	
 	@Override
-	public Set<CardSet> getKnock() 
+	public Set<ICardSet> getKnock() 
 	{
 		return aHand.getMatchedSets();
 	}

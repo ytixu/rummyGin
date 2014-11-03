@@ -55,13 +55,32 @@ public interface Player
 	 * 
 	 * @return
 	 */
-	Set<CardSet> getKnock();
+	Set<ICardSet> getKnock();
 	
 	/**
-	 * 
+	 * The global score.
 	 * @return
 	 */
 	int getScore();
+	
+	/**
+	 * The hand score for the player who didn't knock.
+	 * @return
+	 */
+	int getLayoutScore();
+	
+	/**
+	 * The hand score of the player who knocked. 
+	 * @return
+	 */
+	int getKnockingScore();
+	
+	/**
+	 * Update the global score.
+	 * @param pUpdate
+	 * @return
+	 */
+	void updateScore(int pUpdate);
 	
 	/**
 	 * 
@@ -72,9 +91,14 @@ public interface Player
 	/**
 	 * Layout all the cards after the opponent knocks.
 	 * Match to runs and groups and extend deadwook to opponent's matches. 
-	 * @param pCardSet
+	 * @param knocking
 	 * @return
 	 */
-	Set<ICardSet> layout(Set<CardSet> pCardSet);
-
+	Set<ICardSet> layout(Set<ICardSet> knocking);
+	
+	/**
+	 * 
+	 * @param pTurnNumber
+	 */
+	void reset(int pTurnNumber);
 }

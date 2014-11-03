@@ -38,7 +38,7 @@ public class RandomPlayer extends AbstractPlayer
 		{ // pickup discard
 			aHand.add(pModel.getDiscard());
 		}
-		pModel.discard(discard);
+		pModel.setDiscard(discard);
 		// decide whether or not to knock. 
 		if (rnd.nextBoolean())
 		{
