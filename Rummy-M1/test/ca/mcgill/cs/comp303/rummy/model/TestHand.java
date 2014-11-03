@@ -66,12 +66,12 @@ public class TestHand
 		assertFalse(aHand.isMatched());
 		long time = System.currentTimeMillis();
 		aHand.autoMatch();
-		Set<CardSet> matchedSet = aHand.getMatchedSets();
+		Set<ICardSet> matchedSet = aHand.getMatchedSets();
 		time = System.currentTimeMillis() - time;
 		assertTrue(aHand.isMatched());
 		aHand.autoMatch();
 		assertTrue(100 > time);
-		for (CardSet s : matchedSet)
+		for (ICardSet s : matchedSet)
 		{
 			for (Card c : s)
 			{
@@ -148,7 +148,7 @@ public class TestHand
         lHand.autoMatch();
         Set<Card> lUnmatched = lHand.getUnmatchedCards();
         assertEquals( 1, lUnmatched.size());
-        Set<CardSet> lMatched = lHand.getMatchedSets();
+        Set<ICardSet> lMatched = lHand.getMatchedSets();
         assertEquals( 3, lMatched.size());
         assertEquals( 2, lHand.score() );
     }
@@ -173,7 +173,7 @@ public class TestHand
         lHand.autoMatch();
         Set<Card> lUnmatched = lHand.getUnmatchedCards();
         assertEquals( 1, lUnmatched.size());
-        Set<CardSet> lMatched = lHand.getMatchedSets();
+        Set<ICardSet> lMatched = lHand.getMatchedSets();
         assertEquals( 3, lMatched.size());
         assertEquals( 10, lHand.score() );
     }
