@@ -31,8 +31,14 @@ public interface GameModelLogger
 	Object getScore();
 	
 	/**
-	 * See what has been played. 
+	 * 
 	 * @return
 	 */
-	Object getPlayed();
+	Object getKnocked();
+	
+	/**
+	 * 
+	 * @return
+	 */
+	Object getLayout();
 }

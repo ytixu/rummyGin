@@ -18,5 +18,5 @@ public interface GameModelPlayer extends GameModelLogger
 	/**
 	 * Add discard card.
 	 */
-	void discard(Card pCard);
+	void setDiscard(Card pCard);
 }
