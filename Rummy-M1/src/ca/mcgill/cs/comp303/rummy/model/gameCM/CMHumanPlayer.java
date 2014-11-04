@@ -25,9 +25,11 @@ public class CMHumanPlayer extends AbstractHumanPlayer
 	private Random aRnd = new Random();
 	private String[] aErrorMessage = new String[]
 			{
-			"What the **** did you say?",
-			"That's no valid input, you morron.",
-			"Robillard will be disappointed of you..."
+				"What the **** did you say?",
+				"That's no valid input, you morron.",
+				"Robillard will be disappointed of you...",
+				"I did not choose you to come here to embarasse me!",
+				"Don't make the robot laugh at you."
 			};
 
 	/**
@@ -44,7 +46,7 @@ public class CMHumanPlayer extends AbstractHumanPlayer
 	 */
 	private void printError()
 	{
-		System.out.println(aErrorMessage[aRnd.nextInt()%3]);
+		System.out.println(aErrorMessage[Math.abs(aRnd.nextInt()%3)]);
 	}
 	
 	
@@ -61,6 +63,9 @@ public class CMHumanPlayer extends AbstractHumanPlayer
 		{
 			case 1:
 				sRank = "A";
+				break;
+			case 10:
+				sRank = "T";
 				break;
 			case 11:
 				sRank = "J";
@@ -95,6 +100,9 @@ public class CMHumanPlayer extends AbstractHumanPlayer
 		{
 			case 'A':
 				rank = Rank.ACE;
+				break;
+			case 'T':
+				rank = Rank.TEN;
 				break;
 			case 'J':
 				rank = Rank.JACK;
@@ -172,29 +180,31 @@ public class CMHumanPlayer extends AbstractHumanPlayer
 	{
 		displayHand();
 		Card picked = null;
-		Card pickedDiscard = null;
-		while (picked == null)
+		while (picked == null && aPicked == null)
 		{
 			System.out.println("The discard card is " + pModel.getDiscard().toString());
 			System.out.println("Do you want to pick the discarded card? Y or N");
 			String answer = aInput.nextLine();
 			if (answer.equals("Y"))
 			{
-				picked = pModel.getDiscard();
-				pickedDiscard = picked;
+				pickDiscard(pModel.getDiscard());
 			}
 			else if (answer.equals("N"))
 			{
 				picked = pModel.draw();
 			}
-			printError();
+			else
+			{
+				printError();
+			}
 		}
-		cardToString(picked);
-		displayHand();
-		
 		Card toDiscard = null;
 		while (toDiscard == null)
 		{
+			if (picked != null)
+			{
+				System.out.println("Drawn from deck: " + cardToString(picked));
+			}
 			displayHand();
 			System.out.println("Choose a card to discard.");
 			String answer = aInput.nextLine();
@@ -203,10 +213,18 @@ public class CMHumanPlayer extends AbstractHumanPlayer
 			{
 				printError();
 			}
+			else if ((!aHand.contains(toDiscard) && !toDiscard.equals(picked)) || !discard(toDiscard))
+			{
+				System.out.println("You just picked that card or that card is not in your hand!");
+				toDiscard = null;
+			}
 		}
 		pModel.setDiscard(toDiscard);
-		discard(toDiscard);
-		
+		if (!addDiscardToHand() && !toDiscard.equals(picked))
+		{
+			aHand.add(picked);
+		}
+		displayHand();
 		aHand.autoMatch();
 		if (aHand.canKnock())
 		{
@@ -214,15 +232,18 @@ public class CMHumanPlayer extends AbstractHumanPlayer
 			{
 				System.out.println("You can knock. Do you want to knock? Y or N");
 				String answer = aInput.nextLine();
-				if (answer == "Y")
+				if (answer.equals("Y"))
 				{
 					return true;
 				}
-				else if (answer == "N")
+				else if (answer.equals("N"))
 				{
 					return false;
 				} 
-				printError();
+				else
+				{
+					printError(); 
+				}
 			} 
 		}
 		return false;

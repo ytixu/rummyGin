@@ -47,5 +47,6 @@ public class CMObserver implements GameObserver
 	public void logEndGame(GameModelLogger pEngine)
 	{
 		System.out.println("Score:\n" + pEngine.getScore().toString());
+		System.out.println("Game Ended");
 	}
 }

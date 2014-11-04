@@ -21,6 +21,7 @@ public class CMGame
 	public static void main(String[] pTheDeadliestBattleOfRummyGinWahahahaha)
 	{
 		GameEngine theMatrix = new GameEngine();
+		theMatrix.addObservers(new CMObserver());
 		
 		// get player name
 		Scanner input = new Scanner(System.in);
