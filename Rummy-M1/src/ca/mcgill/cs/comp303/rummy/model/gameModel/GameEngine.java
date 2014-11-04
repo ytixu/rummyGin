@@ -212,9 +212,9 @@ public class GameEngine implements GameModelPlayer
 	{
 		if (aDeck.size() > 2)
 		{
-			return false;
+			return true;
 		}
-		return true;
+		return false;
 	}
 	
 	/**
