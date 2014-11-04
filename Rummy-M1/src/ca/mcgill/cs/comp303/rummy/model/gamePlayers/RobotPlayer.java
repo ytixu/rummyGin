@@ -37,7 +37,7 @@ public class RobotPlayer extends AbstractPlayer
 		Card takeOut = null;
 		Card putIn = pCard;
 		int minScore = pScore;
-		for (Card c : aTestHand.getHand())
+		for (Card c : aHand.getHand()) 
 		{
 			aTestHand.remove(c);
 			aTestHand.add(putIn);
@@ -59,7 +59,7 @@ public class RobotPlayer extends AbstractPlayer
 		aHand.autoMatch();
 		Card newCard = pModel.getDiscard();
 		SimpleEntry<Integer, Card> result = simulate(newCard, aHand.score());
-		if (result.getKey() > aHand.score())
+		if (aHand.score() <= result.getKey())
 		{
 			newCard = pModel.draw();
 			result = simulate(newCard, Integer.MAX_VALUE);
