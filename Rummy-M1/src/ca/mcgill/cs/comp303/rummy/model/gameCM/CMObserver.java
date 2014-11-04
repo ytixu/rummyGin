@@ -42,7 +42,7 @@ public class CMObserver implements GameObserver
 		{
 			System.out.println("The top of the dicard pile is " + pEngine.getDiscard().toString());
 		}
-	}
+	} 
 	
 	public void logEndGame(GameModelLogger pEngine)
 	{
