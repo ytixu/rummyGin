@@ -1,1 +1,1 @@
-http://ytixu.github.io/rummyGin/project.class.violet.html
+http://ytixu.github.io/rummyGin/
