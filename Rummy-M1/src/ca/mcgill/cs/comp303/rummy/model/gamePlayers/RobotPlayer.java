@@ -36,20 +36,20 @@ public class RobotPlayer extends AbstractPlayer
 		aTestHand.copy(aHand);
 		Card takeOut = null;
 		Card putIn = pCard;
-		int min_score = pScore;
+		int minScore = pScore;
 		for (Card c : aTestHand.getHand())
 		{
 			aTestHand.remove(c);
 			aTestHand.add(putIn);
 			aTestHand.autoMatch();
-			if (aTestHand.score() < min_score)
+			if (aTestHand.score() < minScore)
 			{
 				takeOut = c;
-				min_score = aTestHand.score();
+				minScore = aTestHand.score();
 			}
 			putIn = c;
 		}
-		return new SimpleEntry<Integer, Card>(min_score, takeOut);
+		return new SimpleEntry<Integer, Card>(minScore, takeOut);
 	}
 
 	@Override

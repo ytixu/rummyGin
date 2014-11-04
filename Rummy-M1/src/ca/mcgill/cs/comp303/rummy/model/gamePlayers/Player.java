@@ -23,7 +23,7 @@ public interface Player
 	boolean play(GameModelPlayer pModel);
 	
 	/**
-	 * 
+	 * Reset when new game.
 	 */
 	void clearHand();
 	
@@ -34,10 +34,31 @@ public interface Player
 	boolean isComplete();
 	
 	/**
-	 * 
+	 * Add a drawn card into the hand.
 	 * @param pCard
 	 */
 	void draw(Card pCard);
+	
+	/**
+	 * Remember which card we discarded.
+	 * @param pCard
+	 */
+	void pickDiscard(Card pCard);
+	
+	/**
+	 * Add the discard card into the hand.
+	 * Return true if we added something.
+	 */
+	boolean addDiscardToHand();
+	
+	/**
+	 * Remove card from hand.
+	 * If it's the same as the card just picked from the dicard pile, 
+	 * return false.
+	 * @param pCard
+	 * @return
+	 */
+	boolean discard(Card pCard);
 	
 	/**
 	 * 
@@ -96,9 +117,4 @@ public interface Player
 	 */
 	Set<ICardSet> layout(Set<ICardSet> knocking);
 	
-	/**
-	 * 
-	 * @param pTurnNumber
-	 */
-	void reset(int pTurnNumber);
 }

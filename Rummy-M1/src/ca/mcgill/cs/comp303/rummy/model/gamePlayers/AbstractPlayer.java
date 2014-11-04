@@ -21,9 +21,9 @@ public abstract class AbstractPlayer implements Player
 {
 	protected Hand aHand;
 	protected String aName;
-	protected int aTurnNumber = 0;
 	protected int aLayoutScore = 0;
 	protected int aScore = 0;
+	protected Card aPicked;
 	
 	/**
 	 * Constructor.
@@ -32,27 +32,7 @@ public abstract class AbstractPlayer implements Player
 	{
 		aHand = new Hand();
 		aName = pName;
-	}
-	
-	public void reset(int pTurnNumber)
-	{
-		aHand.clear();
-		aLayoutScore = 0;
-		aTurnNumber = pTurnNumber;
-	}
-	
-	/**
-	 * Set the turn number. 
-	 * @param pTurnNumber
-	 */
-	public void setTurnNumber(int pTurnNumber)
-	{
-		aTurnNumber = pTurnNumber;
-	}
-	
-	public int getTurnNumber()
-	{
-		return aTurnNumber;
+		aPicked = null;
 	}
 	
 	/**
@@ -76,11 +56,12 @@ public abstract class AbstractPlayer implements Player
 	}
 	
 	/**
-	 * Reset the hand.
+	 * 
 	 */
 	public void clearHand()
 	{
 		aHand.clear();
+		aLayoutScore = 0;
 	}
 	
 	@Override
@@ -123,16 +104,37 @@ public abstract class AbstractPlayer implements Player
 		aHand.add(pCard);
 	}
 	
-	/**
-	 * Discard a card.
-	 * @throws HandException if discard card was just picked up from the discard pile. 
-	 * @param pCard
-	 */
-	public void discard(Card pCard)
+	public void pickDiscard(Card pCard)
 	{
-		aHand.remove(pCard);
-		//TODO: Need to add pCard to discard stack
+		aPicked = pCard;
 	}
+	
+	public boolean discard(Card pCard)
+	{
+		if (aPicked == null || !pCard.equals(aPicked))
+		{
+			aHand.remove(pCard);
+			return true;
+		}
+		return false;
+		
+	}
+	
+	/**
+	 * @pre: aPicked != null
+	 * @pre: !aHand.isComplete()
+	 */
+	public boolean addDiscardToHand()
+	{
+		if (aPicked != null)
+		{
+			aHand.add(aPicked);
+			aPicked = null;
+			return true;
+		}
+		return false;
+	}
+
 	
 	@Override
 	public Set<Card> getDeadWook()
@@ -158,7 +160,7 @@ public abstract class AbstractPlayer implements Player
 					if (c.getRank().equals(rank))
 					{
 						newSet.appendBottom(c);
-						aLayoutScore -= Math.min(c.getRank().ordinal() + 1, 10);
+						aLayoutScore -= Math.min(c.getRank().ordinal() + 1, Hand.HANDSIZE);
 						break;
 					}
 				}
@@ -188,14 +190,14 @@ public abstract class AbstractPlayer implements Player
 					if (tempRank == bRank)
 					{
 						newSet.appendTop(c);
-						aLayoutScore -= Math.min(c.getRank().ordinal() + 1, 10);
+						aLayoutScore -= Math.min(c.getRank().ordinal() + 1, Hand.HANDSIZE);
 						bRank --;
 					}
 					// check end
 					else if (tempRank == eRank)
 					{
 						newSet.appendBottom(c);
-						aLayoutScore -= Math.min(c.getRank().ordinal() + 1, 10);
+						aLayoutScore -= Math.min(c.getRank().ordinal() + 1, Hand.HANDSIZE);
 						eRank ++;
 					}
 				}

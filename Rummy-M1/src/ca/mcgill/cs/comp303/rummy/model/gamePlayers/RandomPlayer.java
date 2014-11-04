@@ -40,7 +40,7 @@ public class RandomPlayer extends AbstractPlayer
 		}
 		pModel.setDiscard(discard);
 		// decide whether or not to knock. 
-		if (rnd.nextBoolean())
+		if (rnd.nextBoolean()) 
 		{
 			aHand.autoMatch();
 			if (aHand.canKnock())
