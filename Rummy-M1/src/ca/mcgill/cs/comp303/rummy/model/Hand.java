@@ -371,16 +371,20 @@ public class Hand
 		HashMap<Integer, HashSet<CardSet>> matches = 
 				autoMatchRecurse(new ArrayList<CardSet>(aMatchedSet.keySet()), new ArrayList<Card>());
 		
+		if (matches.size() != 0)
+		{		
 		ArrayList<Integer> sortedPoints = new ArrayList<Integer>(matches.keySet());
-		Collections.sort(sortedPoints);
-		// Minimize deadwook = maximize points in the matches
-		for (CardSet s : matches.get(sortedPoints.get(sortedPoints.size() - 1)))
-		{
-			for (Card c : s)
+			Collections.sort(sortedPoints);
+					
+			// Minimize deadwook = maximize points in the matches
+			for (CardSet s : matches.get(sortedPoints.get(sortedPoints.size() - 1)))
 			{
-				aHand.put(c, true);
+				for (Card c : s)
+				{
+					aHand.put(c, true);
+				}
+				aMatchedSet.put(s, true);
 			}
-			aMatchedSet.put(s, true);
 		}
 		calculateScore();
 	}
