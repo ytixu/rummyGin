@@ -180,7 +180,8 @@ public class GameEngine implements GameModelPlayer
 	{
 		int score1 = aPlayers[aTurn].getScore();
 		int score2 = getNextPlayer().getScore();
-		if (Math.max(score1, score2) <= ENDGAME)
+		// assign bonus
+		if (Math.max(score1, score2) >= ENDGAME)
 		{
 			if (score1 > score2)
 			{
@@ -193,7 +194,7 @@ public class GameEngine implements GameModelPlayer
 					getNextPlayer().updateScore(ENDGAMENOSCORE);
 				}
 			}
-			else if (score2 > score2)
+			else if (score2 > score1)
 			{
 				if (score1 > 0)
 				{
@@ -220,7 +221,7 @@ public class GameEngine implements GameModelPlayer
 	/**
 	 * @pre aPlayers.length != 0
 	 */
-	public void start()
+	public void playOnce()
 	{
 		boolean canPlay = true;
 		while(canPlay)
@@ -230,12 +231,28 @@ public class GameEngine implements GameModelPlayer
 				canPlay = false;
 				endGameWithKnock();
 			}
-			if (!moreThanTwoCardsLeft())
+			else if (!moreThanTwoCardsLeft())
 			{
 				canPlay = false;
 				endGame();
 			}
-			logPlayed();
+			else
+			{
+				logPlayed();
+			}
+		}
+	}
+	
+	/**
+	 * Play until one player has score bigger than 100.
+	 * @pre aPlayers.length != 0
+	 */
+	public void start()
+	{
+		while (Math.max(aPlayers[0].getScore(), aPlayers[1].getScore()) < 100)
+		{
+			playOnce();
+			newGame();
 		}
 	}
 	
@@ -328,6 +345,7 @@ public class GameEngine implements GameModelPlayer
 	{
 		GameEngine ge = new GameEngine();
 		ge.setPlayers(new RandomPlayer(), new RobotPlayer());
+		ge.addObservers(new EndGameObserver());
 		ge.newGame();
 		ge.start();
 	}
