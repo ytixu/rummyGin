@@ -23,7 +23,7 @@ public class CMHumanPlayer extends AbstractHumanPlayer
 {
 	private Scanner aInput = new Scanner(System.in);
 	private Random aRnd = new Random();
-	private String[] aErrorMessage = new String[]
+	private String[] aErrorMessages = new String[]
 			{
 				"What the **** did you say?",
 				"That's no valid input, you morron.",
@@ -46,7 +46,7 @@ public class CMHumanPlayer extends AbstractHumanPlayer
 	 */
 	private void printError()
 	{
-		System.out.println(aErrorMessage[Math.abs(aRnd.nextInt()%3)]);
+		System.out.println(aErrorMessages[Math.abs(aRnd.nextInt()%3)]);
 	}
 	
 	

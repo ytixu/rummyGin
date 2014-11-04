@@ -234,7 +234,7 @@ public class Hand
 	 * @throws HandException If the cards in pCard are not all unmatched
 	 * cards of the hand or if the group is not a valid group.
 	 */
-	public void createGroup( Set<Card> pCards )
+	protected void createGroup( Set<Card> pCards )
 	{
 		assert pCards != null;
 		ArrayList<Card> sortedHand = new ArrayList<Card>(pCards);
@@ -277,7 +277,7 @@ public class Hand
 	 * @throws HandException If the cards in pCard are not all unmatched
 	 * cards of the hand or if the group is not a valid group.
 	 */
-	public void createRun( Set<Card> pCards )
+	protected void createRun( Set<Card> pCards )
 	{
 		assert pCards != null; 
 		ArrayList<Card> sortedHand = new ArrayList<Card>(pCards);

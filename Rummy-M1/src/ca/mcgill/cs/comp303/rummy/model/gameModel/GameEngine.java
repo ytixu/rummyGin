@@ -20,6 +20,11 @@ import ca.mcgill.cs.comp303.rummy.model.gamePlayers.RobotPlayer;
  */
 public class GameEngine implements GameModelPlayer
 {
+	private final int UNDERCUTPTS = 10;
+	private final int GOGINPTS = 20;
+	private final int ENDGAME = 100;
+	private final int ENDGAMENOSCORE = 200;
+	
 	// states
 	private Player[] aPlayers;
 	private Deck aDeck;
@@ -28,11 +33,6 @@ public class GameEngine implements GameModelPlayer
 	
 	private Set<ICardSet> aKnocked;
 	private Set<ICardSet> aKnockedLayout;
-	
-	private final int UNDERCUTPTS = 10;
-	private final int GOGINPTS = 20;
-	private final int ENDGAME = 100;
-	private final int ENDGAMENOSCORE = 200;
 	
 	private ArrayList<GameObserver> aLoggers;
 	
