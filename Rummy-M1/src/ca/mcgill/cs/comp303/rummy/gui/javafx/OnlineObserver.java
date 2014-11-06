@@ -77,8 +77,17 @@ public class OnlineObserver implements GameObserver
 	
 	public void logEndGame(GameModelLogger pEngine) 
 	{
-		write("Score:\n" + pEngine.getScore().toString());
+		HashMap<String, Integer> scores = (HashMap<String, Integer>)pEngine.getScore();
 		write("Game Ended");
+		int i = 0;
+		for (Entry<String, Integer> s : scores.entrySet())
+		{
+			String[] data = aPlayerScores[i].getText().split(" : ");
+			int score = Integer.parseInt(data[1]);
+			write(s.getKey() + " +" + (s.getValue() - score));
+			aPlayerScores[i].setText(data[0] + " : " + s.getValue());
+			i++;
+		}
 	}
 
 	/**
