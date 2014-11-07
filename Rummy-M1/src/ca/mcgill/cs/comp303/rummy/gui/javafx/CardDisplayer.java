@@ -27,15 +27,13 @@ public class CardDisplayer implements GameObserver{
 	
 	private final int CARD_SPACE = -50;
 	private final int IMAGE_SPACE = -40;
-	private final int HSPACE = 800;
-	private final int VSPACE = 400;
+	private final int HSPACE = 600;
 
 	private VBox mainPane;
 	private HBox opponent;
 	private HBox player;
 	private HBox cardStacks;
-	private HBox playerKnock;
-	private HBox opponentKnock;
+	private HBox knock;
 	private HBox playerDeadWook;
 	private HBox opponentDeadWook;
 	
@@ -103,7 +101,7 @@ public class CardDisplayer implements GameObserver{
 	}
 	
 	private Map<String, Image> aCards;
-	private ImageButton discardPile;
+	private ImageButton discardPile = null;
 	private HandCardButton[] playerCards;
 	private ImageView[] opponentCards;
 	
@@ -116,7 +114,6 @@ public class CardDisplayer implements GameObserver{
 		opponent.setAlignment(Pos.CENTER);
 		player = new HBox(CARD_SPACE);
 		player.setAlignment(Pos.TOP_CENTER);
-		player.setMinWidth(HSPACE);
 		playerCards = new HandCardButton[Hand.HANDSIZE];
 		opponentCards = new ImageView[Hand.HANDSIZE];
 		for (int i=0; i<Hand.HANDSIZE; i++)
@@ -129,8 +126,22 @@ public class CardDisplayer implements GameObserver{
 		cardStacks = new HBox(Gui.BOX_SPACE);
 		cardStacks.setAlignment(Pos.CENTER_LEFT);
 		cardStacks.getChildren().add(new ImageButton(getBack()));
-		cardStacks.setMinHeight(VSPACE);
-//		playerKnock = new HBox()
+		
+		knock = new HBox(IMAGE_SPACE);
+		knock.setMinHeight(300);
+		knock.setAlignment(Pos.CENTER);
+		playerDeadWook = new HBox(IMAGE_SPACE);
+		playerDeadWook.setMinHeight(100);
+		playerDeadWook.setAlignment(Pos.CENTER);
+		opponentDeadWook = new HBox(IMAGE_SPACE);
+		opponentDeadWook.setMinHeight(100);
+		opponentDeadWook.setAlignment(Pos.CENTER);
+		VBox endPane = new VBox(Gui.BOX_SPACE);
+		endPane.getChildren().add(knock);
+		endPane.getChildren().add(playerDeadWook);
+		endPane.getChildren().add(opponentDeadWook);
+		endPane.setMinWidth(HSPACE);
+		cardStacks.getChildren().add(endPane);
 		
 		mainPane.getChildren().add(opponent);
 		mainPane.getChildren().add(cardStacks);
@@ -198,7 +209,8 @@ public class CardDisplayer implements GameObserver{
 	@Override
 	public void logStartGame(GameModelLogger pEngine) {
 		distribute(Gui.getHumanHand());
-		discardPile = new ImageButton(getCard(pEngine.getDiscard()));
+		if (discardPile != null) discardPile.setImage(getCard(pEngine.getDiscard()));
+		else discardPile = new ImageButton(getCard(pEngine.getDiscard()));
 		cardStacks.getChildren().add(discardPile);
 	}
 
