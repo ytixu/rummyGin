@@ -57,11 +57,26 @@ public class GameEngine implements GameModelPlayer
 	{
 		aPlayers[0] = pPlayer1;
 		aPlayers[1] = pPlayer2;
+		logStartGame();
 	}
 	
 	public void addObservers(GameObserver pObs)
 	{
 		aLoggers.add(pObs);
+	}
+	
+	/**
+	 * @pre aPlayer not empty
+	 */
+	@Override
+	public String[] getPlayers()
+	{
+		String[] names = new String[aPlayers.length];
+		for (int i = 0; i<aPlayers.length; i++)
+		{
+			names[i] = aPlayers[i].getName();
+		}
+		return names;
 	}
 	
 	/**
@@ -276,6 +291,13 @@ public class GameEngine implements GameModelPlayer
 	/*
 	 * Notify loggers.
 	 */
+	private void logStartGame()
+	{
+		for (GameObserver o : aLoggers)
+		{
+			o.logStartGame(this);
+		}
+	}
 	private void logPlayed()
 	{
 		for (GameObserver o : aLoggers)
@@ -283,7 +305,6 @@ public class GameEngine implements GameModelPlayer
 			o.logPlayed(this);
 		}
 	}
-	
 	private void logEndGame()
 	{
 		

@@ -29,4 +29,9 @@ public class EndGameObserver implements GameObserver
 		System.out.println("Score:\n" + pEngine.getScore().toString());
 	}
 
+	@Override
+	public void logStartGame(GameModelLogger pEngine) {
+		return;
+	}
+
 }

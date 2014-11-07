@@ -26,7 +26,6 @@ public interface GameModelLogger
 	/**
 	 * Get the scores for the players when the game ends. 
 	 * @return
-	 * @pre isEnd()
 	 */
 	Object getScore();
 	
@@ -41,4 +40,10 @@ public interface GameModelLogger
 	 * @return
 	 */
 	Object getLayout();
+	
+	/**
+	 * Get list of player names.
+	 * @return
+	 */
+	String[] getPlayers();
 }

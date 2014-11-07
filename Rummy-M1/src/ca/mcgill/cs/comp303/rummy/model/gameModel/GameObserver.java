@@ -9,6 +9,12 @@ package ca.mcgill.cs.comp303.rummy.model.gameModel;
 public interface GameObserver 
 {
 	/**
+	 * 
+	 * @param pEngine
+	 */
+	void logStartGame(GameModelLogger pEngine);
+	
+	/**
 	 * Call back function.
 	 * @param pEngine
 	 */
