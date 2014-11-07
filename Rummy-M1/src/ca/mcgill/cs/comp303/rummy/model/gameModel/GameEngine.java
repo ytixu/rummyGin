@@ -57,7 +57,6 @@ public class GameEngine implements GameModelPlayer
 	{
 		aPlayers[0] = pPlayer1;
 		aPlayers[1] = pPlayer2;
-		logStartGame();
 	}
 	
 	public void addObservers(GameObserver pObs)
@@ -108,6 +107,7 @@ public class GameEngine implements GameModelPlayer
 		{
 			setTurn();
 		}
+		logStartGame();
 	}
 	
 	/*

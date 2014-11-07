@@ -1,7 +1,9 @@
 package ca.mcgill.cs.comp303.rummy.gui.javafx;
 
 import java.io.File;
+import java.util.Set;
 
+import ca.mcgill.cs.comp303.rummy.model.Card;
 import ca.mcgill.cs.comp303.rummy.model.gameModel.GameEngine;
 import ca.mcgill.cs.comp303.rummy.model.gamePlayers.Player;
 import ca.mcgill.cs.comp303.rummy.model.gamePlayers.RandomPlayer;
@@ -30,10 +32,10 @@ import javafx.stage.Stage;
  */
 public class Gui extends Application
 {
-	private static final int SIZE_X = 1600;
+	private static final int SIZE_X = 1200;
 	private static final int SIZE_Y = 800;
-	private static final int BOX_SPACE = 5;
-	private static final int PADDING = 10;
+	static final int BOX_SPACE = 5;
+	static final int PADDING = 30;
 	private static final String DEFAULTNAME = "G";
 	
 	private static final String CHOOSENAME = "Please choose a name.";
@@ -42,12 +44,23 @@ public class Gui extends Application
 	private final GameEngine CHICKEN = new GameEngine();
 	private final StackPane ROOT = new StackPane();
 	
-	private Player aHumanPlayer;
 	private OnlineObserver aLogDisplay;
+	private CardDisplayer aCardDisplay;
 	
 	private enum Level
 	{
 		WOBBUFFET, PSYDUCK
+	}
+	
+	private static Player aHumanPlayer;
+	
+	/**
+	 * @pre aHumanPlayer != null
+	 * @return
+	 */
+	public static Set<Card> getHumanHand()
+	{
+		return aHumanPlayer.getHand();
 	}
 
 	/*
@@ -155,14 +168,20 @@ public class Gui extends Application
 	private void drawEverything()
 	{	
 		HBox pane = new HBox(BOX_SPACE);
+		pane.setAlignment(Pos.CENTER);;
+		// draw left
 		VBox leftBar = new VBox(BOX_SPACE);
 		leftBar.setAlignment(Pos.BOTTOM_LEFT);
 		aLogDisplay.displayDisplay(leftBar);
 		leftBar.getChildren().add(getMenu());
-        
 		pane.getChildren().add(leftBar);
+		// draw center
+		aCardDisplay.setDiplayer(pane);
+		
 		ROOT.getChildren().clear();
 		ROOT.getChildren().add(pane);
+		
+		CHICKEN.newGame();
 	}
 	
 	@Override
@@ -171,11 +190,12 @@ public class Gui extends Application
 		// initialization
 		pStage.setTitle("Gin Rummy");
 		aLogDisplay = new OnlineObserver();
+		aCardDisplay = new CardDisplayer();
 		CHICKEN.addObservers(aLogDisplay);
+		CHICKEN.addObservers(aCardDisplay);
 		ROOT.setPadding(new Insets(PADDING));
 		// get name of player
 		ROOT.getChildren().add(getPlayer());
-		
 		// css
 //        File f = new File("style.css");
 //        ROOT.getStylesheets().clear();

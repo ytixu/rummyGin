@@ -33,9 +33,12 @@ public class OnlineObserver implements GameObserver
 		aDisplayer.setMinSize(aX, aY);
 		aDisplayer.setDisable(true);
 		aDisplayer.setAlignment(Pos.BOTTOM_LEFT);
-		for (Label l : aPlayerScores)
+		aPlayerScores = new Label[2];
+		for (int i=0; i<aPlayerScores.length; i++)
 		{
+			Label l = new Label();
 			pPane.getChildren().add(l);
+			aPlayerScores[i] = l;
 		}
 		pPane.getChildren().add(aDisplayer);
 	}
@@ -97,11 +100,10 @@ public class OnlineObserver implements GameObserver
 	public void logStartGame(GameModelLogger pEngine) 
 	{
 		HashMap<String, Integer> score = (HashMap<String, Integer>)pEngine.getScore();
-		aPlayerScores = new Label[score.size()];
 		int i = 0;
 		for (Entry<String, Integer> s : score.entrySet())
 		{
-			aPlayerScores[i] = new Label(s.getKey() + " : " + s.getValue());
+			aPlayerScores[i].setText(s.getKey() + " : " + s.getValue());
 			i++;
 		}
 		String[] names = pEngine.getPlayers();
