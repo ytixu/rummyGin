@@ -19,7 +19,7 @@ public class GameButtons
 {
 	private static HashMap<BntName, Button> bottons = new HashMap<BntName, Button>();
 	public enum BntName{
-		NEW, SAVE, LOAD
+		NEW, SAVE, LOAD, KNOCK, PASS
 	}
 	
 	public static void initialize(GameEngine pEngine, Gui pGui)
@@ -52,6 +52,29 @@ public class GameButtons
 			}
 		});
 		bottons.put(BntName.LOAD, load);
+		
+	}
+	
+	public static void initialize(FXHumanPlayer pPlayer)
+	{
+		Button knock = new Button("Knock");
+		knock.setOnAction(new EventHandler<ActionEvent>(){
+			public void handle(ActionEvent pEvent)
+			{
+				pPlayer.knock();
+				// TODO: refresh gui
+			}
+		});
+		bottons.put(BntName.KNOCK, knock);
+		
+		Button pass = new Button("Pass");
+		pass.setOnAction(new EventHandler<ActionEvent>(){
+			public void handle(ActionEvent pEvent)
+			{
+				// TODO
+			}
+		});
+		bottons.put(BntName.PASS, pass);
 	}
 	
 	/**

@@ -4,9 +4,10 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javafx.geometry.Pos;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.scene.control.Label;
-import javafx.scene.control.TextField;
+import javafx.scene.control.TextArea;
 import javafx.scene.layout.Pane;
 import ca.mcgill.cs.comp303.rummy.model.ICardSet;
 import ca.mcgill.cs.comp303.rummy.model.gameModel.GameModelLogger;
@@ -21,7 +22,7 @@ public class OnlineObserver implements GameObserver
 {
 	private final int aX = 300;
 	private final int aY = 200;
-	private TextField aDisplayer = new TextField();
+	private TextArea aDisplayer = new TextArea();
 	private Label[] aPlayerScores;
 	
 	/**
@@ -31,8 +32,7 @@ public class OnlineObserver implements GameObserver
 	public void displayDisplay(Pane pPane)
 	{
 		aDisplayer.setMinSize(aX, aY);
-		aDisplayer.setDisable(true);
-		aDisplayer.setAlignment(Pos.BOTTOM_LEFT);
+		aDisplayer.setEditable(false);
 		aPlayerScores = new Label[2];
 		for (int i=0; i<aPlayerScores.length; i++)
 		{
@@ -41,11 +41,19 @@ public class OnlineObserver implements GameObserver
 			aPlayerScores[i] = l;
 		}
 		pPane.getChildren().add(aDisplayer);
+		
+		aDisplayer.textProperty().addListener(new ChangeListener<Object>() {
+		    @Override
+		    public void changed(ObservableValue<?> observable, Object oldValue,
+		            Object newValue) {
+		    	aDisplayer.setScrollTop(Double.MAX_VALUE);
+		    }
+		});
 	}
 	
 	private void write(String text)
 	{
-		aDisplayer.setText(aDisplayer.getText() + text + "\n");
+		aDisplayer.appendText(text + "\n");
 	}
 	
 	@Override

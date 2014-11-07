@@ -14,6 +14,7 @@ public class FXHumanPlayer extends AbstractHumanPlayer
 	public FXHumanPlayer(String pName) 
 	{
 		super(pName);
+		GameButtons.initialize(this);
 	}
 
 	@Override
@@ -21,6 +22,11 @@ public class FXHumanPlayer extends AbstractHumanPlayer
 	{
 		// TODO Auto-generated method stub
 		return false;
+	}
+	
+	public void knock()
+	{
+		
 	}
 
 }

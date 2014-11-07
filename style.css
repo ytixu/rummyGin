@@ -1,3 +1,4 @@
+/*
 Button{
 	-fx-text-fill: white;
 	-fx-background-radius:0;
@@ -13,4 +14,10 @@ Button.toggle-button:selected {
     -fx-background-insets: 0 0 -1 0, 0, 1, 1;
     /* TODO: -fx-text-fill should be derived */
     -fx-text-fill: -fx-light-text-color;
+}
+*/
+
+
+.text-area .scroll-bar:horizontal:disabled {
+    -fx-opacity: 0;
 }

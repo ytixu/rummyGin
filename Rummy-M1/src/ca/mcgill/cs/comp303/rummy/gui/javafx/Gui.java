@@ -194,9 +194,9 @@ public class Gui extends Application
 		// get name of player
 		ROOT.getChildren().add(getPlayer());
 		// css
-//        File f = new File("style.css");
-//        ROOT.getStylesheets().clear();
-//        ROOT.getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
+        File f = new File("style.css");
+        ROOT.getStylesheets().clear();
+        ROOT.getStylesheets().add("file:///" + f.getAbsolutePath().replace("\\", "/"));
         // size
         pStage.setScene(new Scene(ROOT, SIZE_X, SIZE_Y));
         pStage.show();

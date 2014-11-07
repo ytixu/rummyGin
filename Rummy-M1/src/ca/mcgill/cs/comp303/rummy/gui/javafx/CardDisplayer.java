@@ -210,8 +210,11 @@ public class CardDisplayer implements GameObserver{
 	public void logStartGame(GameModelLogger pEngine) {
 		distribute(Gui.getHumanHand());
 		if (discardPile != null) discardPile.setImage(getCard(pEngine.getDiscard()));
-		else discardPile = new ImageButton(getCard(pEngine.getDiscard()));
-		cardStacks.getChildren().add(discardPile);
+		else {
+			discardPile = new ImageButton(getCard(pEngine.getDiscard()));
+			cardStacks.getChildren().add(discardPile);
+		}
+		
 	}
 
 	@Override
