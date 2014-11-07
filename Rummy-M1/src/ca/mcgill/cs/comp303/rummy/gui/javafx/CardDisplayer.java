@@ -8,10 +8,13 @@ import ca.mcgill.cs.comp303.rummy.model.Card;
 import ca.mcgill.cs.comp303.rummy.model.Hand;
 import ca.mcgill.cs.comp303.rummy.model.gameModel.GameModelLogger;
 import ca.mcgill.cs.comp303.rummy.model.gameModel.GameObserver;
+import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
@@ -23,48 +26,110 @@ public class CardDisplayer implements GameObserver{
 	private final String[] SUIT_CODES = {"c", "d", "h", "s"};
 	
 	private final int CARD_SPACE = -50;
+	private final int IMAGE_SPACE = -40;
 	private final int HSPACE = 800;
 	private final int VSPACE = 400;
-	
-	private Map<String, Image> aCards;
+
 	private VBox mainPane;
 	private HBox opponent;
 	private HBox player;
 	private HBox cardStacks;
-	private ImageView discardPile;
 	private HBox playerKnock;
 	private HBox opponentKnock;
 	private HBox playerDeadWook;
 	private HBox opponentDeadWook;
 	
-	private ImageView[] playerCards;
+	public class ImageButton extends Button {
+	    
+	    protected final String STYLE_NORMAL = "-fx-background-color: transparent; -fx-padding: 5 5 5 5;";
+	    protected final String STYLE_PRESSED = "-fx-background-color: transparent; -fx-padding: 6 4 4 6;";
+	    private ImageView aImage;
+	    
+	    public void setImage(Image img)
+	    {
+	    	aImage.setImage(img);
+	    }
+	    
+	    public ImageButton(Image img) {
+	    	aImage = new ImageView(img);
+	        setGraphic(aImage);
+	        setStyle(STYLE_NORMAL);
+	        
+	        setOnMousePressed(new EventHandler<MouseEvent>() {
+	            @Override
+	            public void handle(MouseEvent event) {
+	                setStyle(STYLE_PRESSED);
+	            }            
+	        });
+	        
+	        setOnMouseReleased(new EventHandler<MouseEvent>() {
+	            @Override
+	            public void handle(MouseEvent event) {
+	               setStyle(STYLE_NORMAL);
+	            }            
+	        });
+	    }
+	    
+	}
+	
+	public class HandCardButton extends ImageButton{
+		private boolean toggled = false;
+		private final String STYLE_UP = "-fx-background-color: transparent; -fx-padding: 10 5 0 5;";
+		private final String STYLE_UP_PRESSED = "-fx-background-color: transparent; -fx-padding: 9 4 1 6;";
+		public HandCardButton(Image img) {
+			super(img);
+			setOnMousePressed(new EventHandler<MouseEvent>() {
+	            @Override
+	            public void handle(MouseEvent event) {
+	            	if (toggled){
+	            		setStyle(STYLE_UP_PRESSED);
+	            		toggled = false;
+	            	}
+	            	else{
+	            		setStyle(STYLE_PRESSED);
+	            		toggled = true;
+	            	}
+	            }            
+	        });
+		        
+		    setOnMouseReleased(new EventHandler<MouseEvent>() {
+	            @Override
+	            public void handle(MouseEvent event) {
+	            	if (toggled) setStyle(STYLE_UP);
+	            	else setStyle(STYLE_NORMAL);
+	            }            
+	        }); 
+		}	
+	}
+	
+	private Map<String, Image> aCards;
+	private ImageButton discardPile;
+	private HandCardButton[] playerCards;
 	private ImageView[] opponentCards;
 	
-	
-	
 	public CardDisplayer(){
-		playerCards = new ImageView[Hand.HANDSIZE];
-		opponentCards = new ImageView[Hand.HANDSIZE];
-		for (int i=0; i<Hand.HANDSIZE; i++)
-		{
-			playerCards[i] = new ImageView();
-			opponentCards[i] = new ImageView();
-		}
+		aCards = new HashMap<String, Image>();
 		mainPane = new VBox(Gui.BOX_SPACE);
 		mainPane.setAlignment(Pos.CENTER);
 		mainPane.setPadding(new Insets(Gui.PADDING));
-		aCards = new HashMap<String, Image>();
-		opponent = new HBox(CARD_SPACE);
+		opponent = new HBox(IMAGE_SPACE);
 		opponent.setAlignment(Pos.CENTER);
 		player = new HBox(CARD_SPACE);
-		player.setAlignment(Pos.CENTER);
+		player.setAlignment(Pos.TOP_CENTER);
 		player.setMinWidth(HSPACE);
+		playerCards = new HandCardButton[Hand.HANDSIZE];
+		opponentCards = new ImageView[Hand.HANDSIZE];
+		for (int i=0; i<Hand.HANDSIZE; i++)
+		{
+			playerCards[i] = new HandCardButton(getBack());
+			opponentCards[i] = new ImageView(getBack());
+			opponent.getChildren().add(opponentCards[i]);
+			player.getChildren().add(playerCards[i]);
+		}
 		cardStacks = new HBox(Gui.BOX_SPACE);
 		cardStacks.setAlignment(Pos.CENTER_LEFT);
-		cardStacks.getChildren().add(new ImageView(getBack()));
+		cardStacks.getChildren().add(new ImageButton(getBack()));
 		cardStacks.setMinHeight(VSPACE);
-		discardPile = new ImageView();
-		cardStacks.getChildren().add(discardPile);
 //		playerKnock = new HBox()
 		
 		mainPane.getChildren().add(opponent);
@@ -81,15 +146,10 @@ public class CardDisplayer implements GameObserver{
 	}
 	
 	private void distribute(Set<Card> pCards){
-		player.getChildren().clear();
-		opponent.getChildren().clear();
 		int i=0;
 		for (Card c: pCards)
 		{
 			playerCards[i].setImage(getCard(c));
-			opponentCards[i].setImage(getBack());
-			player.getChildren().add(playerCards[i]);
-			opponent.getChildren().add(opponentCards[i]);
 			i++;
 		}
 	}
@@ -126,7 +186,7 @@ public class CardDisplayer implements GameObserver{
 	
 	private Image getCardImage(String pCode)
 	{
-		Image lIcon = (Image) aCards.get(pCode);
+		Image lIcon = aCards.get(pCode);
 		if( lIcon == null )
 		{	
 			lIcon = new Image(IMAGE_LOCATION + pCode + IMAGE_SUFFIX);
@@ -138,7 +198,8 @@ public class CardDisplayer implements GameObserver{
 	@Override
 	public void logStartGame(GameModelLogger pEngine) {
 		distribute(Gui.getHumanHand());
-		
+		discardPile = new ImageButton(getCard(pEngine.getDiscard()));
+		cardStacks.getChildren().add(discardPile);
 	}
 
 	@Override

@@ -3,6 +3,7 @@ package ca.mcgill.cs.comp303.rummy.gui.javafx;
 import java.io.File;
 import java.util.Set;
 
+import ca.mcgill.cs.comp303.rummy.gui.javafx.GameButtons.BntName;
 import ca.mcgill.cs.comp303.rummy.model.Card;
 import ca.mcgill.cs.comp303.rummy.model.gameModel.GameEngine;
 import ca.mcgill.cs.comp303.rummy.model.gamePlayers.Player;
@@ -66,7 +67,7 @@ public class Gui extends Application
 	/*
 	 * setup initial positions of the cards
 	 */
-	private void reset()
+	void reset()
 	{
 		//TODO
 	}
@@ -140,6 +141,7 @@ public class Gui extends Application
 		pane.getChildren().add(nameInput);
 		pane.getChildren().add(error);
 		pane.getChildren().add(submit);
+		pane.getChildren().add(GameButtons.getButton(BntName.LOAD));
 		return pane;
 	}
 	
@@ -148,16 +150,10 @@ public class Gui extends Application
 	 */
 	private Pane getMenu()
 	{
-		VBox menu = new VBox(BOX_SPACE);
-		Button newGame = new Button("New Game");
-		newGame.setOnAction(new EventHandler<ActionEvent>(){
-			public void handle(ActionEvent pEvent)
-			{
-				CHICKEN.newGame();
-				reset();
-			}
-		});
-		menu.getChildren().add(newGame);
+		HBox menu = new HBox(BOX_SPACE);
+		menu.getChildren().add(GameButtons.getButton(BntName.NEW));
+		menu.getChildren().add(GameButtons.getButton(BntName.SAVE));
+		menu.getChildren().add(GameButtons.getButton(BntName.LOAD));
 		// TODO: add more buttons
 		return menu;
 	}
@@ -194,6 +190,7 @@ public class Gui extends Application
 		CHICKEN.addObservers(aLogDisplay);
 		CHICKEN.addObservers(aCardDisplay);
 		ROOT.setPadding(new Insets(PADDING));
+		GameButtons.initialize(CHICKEN, this);
 		// get name of player
 		ROOT.getChildren().add(getPlayer());
 		// css
