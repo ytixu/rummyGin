@@ -97,7 +97,13 @@ public class CardDisplayer implements GameObserver{
 	            	else setStyle(STYLE_NORMAL);
 	            }            
 	        }); 
-		}	
+		}
+		public void resetPosition(){
+			if (toggled){
+				toggled = false;
+				setStyle(STYLE_NORMAL);
+			}
+		}
 	}
 	
 	private Map<String, Image> aCards;
@@ -214,7 +220,9 @@ public class CardDisplayer implements GameObserver{
 			discardPile = new ImageButton(getCard(pEngine.getDiscard()));
 			cardStacks.getChildren().add(discardPile);
 		}
-		
+		for (HandCardButton btn: playerCards){
+			btn.resetPosition();
+		}
 	}
 
 	@Override
