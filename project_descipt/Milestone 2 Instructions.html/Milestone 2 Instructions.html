@@ -1,0 +1,54 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+</head>
+<body>
+<h1><strong>Milestone 2 Instruction version 1.0 29 September 2014<br /></strong></h1>
+<p><strong>Recommend Completion Date</strong>: Before Midterm 2.</p>
+<h2>Context</h2>
+<p>In this milestone you will develop the game engine. The game engine is the core of the game and controls all aspects of it except the GUI. The game engine is to be developed as an Application Programming Interface (API), that the GUI component will access. The game engine relies on a model of playing behavior that is implemented by the AI module.</p>
+<h2>Objectives</h2>
+<ul>
+<li>To gain experience with interface and class design.</li>
+<li>To fully understand the dynamic dispatch mechanism</li>
+<li>To practice class hierarchy design</li>
+<li>To better understand the Observer design pattern</li>
+<li>To gain additional experience with test suite design and the testing of complex objects.</li>
+<li>To document design the help of UML diagrams.</li>
+<li>To gain experience with third-party APIs.</li>
+</ul>
+<h2>Setup</h2>
+<p>Build the functionality in the same project as the one developed for Milestone1. Complete each part below. The parts are numbered for reference purposes but are not meant to be completed in sequence because they are inter-related.</p>
+<p>As part of this milestone, develop and document design ideas for your solution by using UML class, object, sequence, and state diagrams. Make sure to bring a copy of your design to office hours. Creating the following diagrams should be especially helpful:</p>
+<ul>
+<li>A class diagram illustrating the organization of the game engine's helper class, including the AI module type hierarchy.</li>
+<li>A sequence diagram showing the sequence of actions when a player plays a card.</li>
+<li>A state diagram showing the possible abstract states of the game engine.</li>
+<li>Object diagrams showing important object graphs at various key points in the game.</li>
+</ul>
+<p>Thinking through these questions first with diagrams should simplify your task and save you implementation time.</p>
+<h2>Part 1 - Game Engine</h2>
+<p>Design and implement a <tt>GameEngine</tt> class that will control the state and playing of the game for one human and one computer player. This state should include, the cards played, the state of the deck, the score of each player, which player is the dealer, etc. This module should have <b>no GUI</b>, but should provide an API allowing clients to "virtually" play the game, i.e., change the state of the object to allow it to control the playing of multiple complete games (which each involves multiple hands). Example of methods in your <tt>GameEngine</tt> API would typically include <tt>newGame()</tt>, <tt>discard(...)</tt>, etc.</p>
+<p>Produce a design with interfaces that meet the principles seen in class, and that will make it as convenient as possible to manipulate the state of the game. Besides the main <tt>GameEngine</tt> class, you can create as many helper classes as necessary. The <tt>GameEngine</tt> needs to instantiate the role of the Subject in the Observer design pattern. This design constraint will later allow you to have the game engine send update notifications to the GUI. For Milestone 2, you can implement very simple non-GUI observers that print stuff on the console.</p>
+<p>As usual, help increase the quality of your software with unit tests. In addition, you should build a <i>driver</i> program (i.e. a <tt>main</tt> method) that simulates playing a game using <tt>GameEngine</tt>. <i>Note that the role for the Driver is not to allow humans to play interactively, but merely to demonstrate you <tt>GameEngine</tt> API in action.</i> For example, Driver code would typically look like:</p>
+<p><code> GameEngine lEngine = new GameEngine();<br /> lEngine.addPlayer(...);<br /> ...<br /> lEngine.newGame();<br /> ...<br /> lEngine.getHumanPlayer().discard(...);<br /> </code></p>
+<p>and so on. You know you have completed this milestone if your driver program can automatically bring multiple games to completion.</p>
+<p>In addition to supporting the basic management of a game, your game engine should have the following features:</p>
+<ul>
+<li><strong>Autoplay:</strong> It should be possible to run the game engine in autoplay mode. Autoplay mode simply plays N games automatically. This feature will make it especially convenient to crash-test your engine (make it play a million games), and to evaluate the dumbness or awesomeness of your AI robots (see below).</li>
+<li><strong>Logging:</strong> All state changes and their trigger (e.g., deal cards) should be <em>logged</em> to a customizable logging output using the <a href="http://docs.oracle.com/javase/6/docs/technotes/guides/logging/">Java logging framework</a>. Like many other APIs you will need to use, TaskNav has been pre-loaded with high-quality tutorials on the Java Logging Framework. The specification for how good logging should be is that you should include all the information necessary for someone (or some software) to completely replay the game exactly as it was originally played. See it as a bit of an audit feature.</li>
+<li><strong>Save Game:</strong> It should be possible to save the game and restore a previously-loaded game. Use the persistence framework of your choice. We put support for Java Binary Serialization and JSON serialization through the GSON library in TaskNav.</li>
+</ul>
+<h2>Part 2 - AI Robots</h2>
+<p>Realizing the game engine (part 1) will require automatically handling decisions that a human player would normally take (i.e., what card to discard, when to knock, etc). Isolate the <i>decision-making</i> behavior a computer player object should have in an interface, and implement it. Note that the behavior of the computer player should be <i>honest</i>, i.e., decisions should not be made using any information that could not be obtained by a human player.</p>
+<p>Everything related the behavior described above should be partitioned into a separate <tt>...ai</tt>package (referred to as the AI module). In designing your AI module, you may want to consider the following points:</p>
+<ul>
+<li>What decisions do players need to make?</li>
+<li>For each of the above decisions, what type of information about the game would help in making a decision (cards seen to date, current hand, etc.)</li>
+<li>What type of information should <b>not</b>be available to computer players?</li>
+<li>How much coupling should there be between the computer players and the game engine, etc.</li>
+</ul>
+<p>The design of the AI module should not allow the system to break the rules of the game or to cheat. Note that the "artificial intelligence" in computer players does not have to rely on advanced AI techniques. No AI course is a prerequisite for completing this milestone. However, the behavior of the AI robots should be reasonable and justifiable.</p>
+<p>Try implementing a few different robots with different styles of play, or making a robot parametric (so it can be adjusted for smartness). An obvious thing to try is to give your robot the ability to count cards, but with an adjustably limited (and possibly imperfect) memory.</p>
+</body>
+</html>

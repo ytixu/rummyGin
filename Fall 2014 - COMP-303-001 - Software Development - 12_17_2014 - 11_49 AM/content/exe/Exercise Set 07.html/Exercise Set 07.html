@@ -1,0 +1,15 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+</head>
+<body>
+<p><strong>Recommended Completion Date</strong>: Before midterm 2</p>
+<ol>
+<li>Go back to the code in package p7 of lecture 13 and fix the equals and clone methods in Employee and Manager. Use the Client driver program to verify your solution.</li>
+<li>Using the employee class hierarchy lecture13.p7, add a "set mentor" method on employees and managers. The methods should have the following constraints: employees should only have employees as mentors, and managers should only have managers as mentors. Try using covariant parameter types to do this: setMentor(Employee) in Employee and setMentor(Manager) in manager. Add instrumentation code (System.out.println) to monitor which method gets called (you don't need to actually implement real functionality). Set a mentor for both types of employees in the client program. What do you observe? Post your conclusions to the discussion forum.</li>
+<li>In a way similar to what you did for item 2, experiment with a "recommend" method that returns an employee object. However, here the logic is reversed: employees should only recommend (= return) managers, and managers should only recommend employees. Can you use contravariant return types, as in: Manager recommend() in class Employee and Employee recommend() in class Manager? What's happening here?</li>
+<li>Solve the Lecture 14 practice exercise, but include the functionality needed for the observer. Implement your solution with stub code as shown for the Lecture 12 practice exercise.</li>
+<li>Study the Figure and Command class hierarchies in JHotDraw as done in class, but this time focus on shared implementation. As you discover the class hierarchy, create a corresponding class diagram that focuses on the main state each class maintains (fields and corresponding methods). Make sure to spot and document the implementation of the template method design pattern, for extra practice.</li>
+</ol>
+</body>
+</html>

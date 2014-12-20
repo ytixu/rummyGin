@@ -1,0 +1,16 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+</head>
+<body>
+<p><strong>Recommend Completion Date</strong>: Before lecture 09.</p>
+<ol>
+<li>Finish writing the contract and corresponding asserts for the Day class (lecture 6 version). Do the getters need pre or post-conditions? Why or why not? For methods that take a Day object as argument, do you need to check that the object represents a valid day? Why or why not? Make sure to specify a contract that clarifies the case of integer overflow.</li>
+<li>Make a UML class diagram that represents the marker mechanism of jEdit. Run jEdit and play around with the Markers menu to figure out what that feature is. To make the diagram, start by studying the Marker class. Use the reference tool to find the only class that keeps a reference to objects of class Marker and include this in the diagram. What part of that class do you include in the diagram? Make an object diagram that shows the part of the jEdit object graph that involves markers.</li>
+<li>Write a program that reflectively creates a Day object and prints it out to the console. Feel free to experiment with other methods of the Reflection API.</li>
+<li>Write a program that takes in a fully-qualified class name X as a command-line parameter and prints "Class X is immutable as verified by NAME" if the class is immutable, or "Class X is mutable" if the class is not mutable, as determined by the presence of a @Immutable annotation for the class. In the first case, NAME is a placeholder: the actual value should be extracted from the annotation instance.</li>
+<li>Complete the tests for the Day class to get 100% statement coverage and find the two bugs.</li>
+<li>Food for thought: If you have 100% statement coverage, does this means all bugs will be found? Why or why not?</li>
+</ol>
+</body>
+</html>

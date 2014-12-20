@@ -1,0 +1,19 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+</head>
+<body>
+<p><strong>Recommended Completion Date: Definitely before midterm 2!<br /></strong></p>
+<p>This practice exercise is designed to help you become proficient at designing solutions that involve multiple design patterns, and thinking about potential variants for a design. It builds directly on the <a href="/d2l/common/dialogs/quickLink/quickLink.d2l?ou=139645&amp;type=content&amp;rcode=McG-536160" target="_self">solution to Lecture 12's practice exercise</a>.</p>
+<p>For all the following extensions to the question, document a solution with appropriate UML diagrams and implement a stub of it in code:</p>
+<ol>
+<li>Extend the design to support storing composite items in the Inventory. What part of the program should be responsible for composing items? Should it be the client, who will then pass the composed items to the Inventory, or should the Inventory provide services for composing items. What are the pros and cons here? Are there any implications on the observers? Take a peek at item 7. Why not try to design your composite so that Item remains immutable?</li>
+<li>Extend the design to support logging each state change to the inventory. In other words, every time an item is added or removed from the inventory, the information should be printed to either a file or to a console. Use an appropriate design pattern.</li>
+<li>Once you have something working for #2, design a mechanism that will allow you to combine different ways to log. For example, what if you want to log to the console AND to a file? Is the decorator or composite design pattern a good idea here? Try them out and see.</li>
+<li>Now restructure the logging so it's implemented as an Observer (as in the project).</li>
+<li>At some point in the evolution of the system, it becomes apparent that many types of clients are only interested in one type of state change (either adding OR removing items). Change the design to accommodate this. Try using two callbacks in the same Observer interface, then two different Observer interfaces altogether. What are the consequences on the design and implementation? What solution do you like best and why?</li>
+<li>Change the design to implement the pull technique for data-flow between observer and model. How will you make it possible for the observers to discover what the last added or removed item was (and whether it was added or removed). Based on your experience, what data-flow technique do you prefer?</li>
+<li>(More challenging) Change Items so they become mutable, and adapt the entire design so that all internal state changes to the inventory still get reported to all observers.</li>
+</ol>
+</body>
+</html>

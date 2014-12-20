@@ -1,0 +1,16 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+</head>
+<body>
+<p><strong>Recommended Completion Date</strong>: Before the final exam.</p>
+<p>You won't get as many opportunities to practice concurrent programming through your project work, so make sure you are able to write simple concurrent programs with basic synchronization using the APIs seen in class. The following exercises should help:</p>
+<ol>
+<li>Do exercises 9.1,9.2, 9.5, 9.7, 9.8, 9.9-9.11 (try without the notes, then check your answers)</li>
+<li>Use a Swing Timer to introduce some delay or animation in your project UI.</li>
+<li>Write a program where one thread (NhumberIncrementer) keeps adding to a shared data structure (make it a class NumberBox), and another thread (NumberPrinter) sleeps, periodically wakes up, and prints whatever number is in the box. Do you need to use synchronization? why or why not? Make the NumberIncrementer thread a deamon thread, and the NumberPrinter thread iterate a finite number of times, so the program eventually completes without using Thread.join.</li>
+<li>Once #3 works, change the program to have two non-deamon threads, and terminate the number-incrementer thread using Thread.join.</li>
+<li>Change the program so the number-incrementer threads only increments number every, say, 1 second. Used conditions to notify the printer thread that a new number is available.</li>
+</ol>
+</body>
+</html>
