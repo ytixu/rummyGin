@@ -1,0 +1,36 @@
+package ca.mcgill.cs.comp303.rummy.model;
+
+import java.util.Iterator;
+
+/**
+ * Implementors of this class should be immutable.
+ */
+public class ICardSet implements Iterable<Card>
+{
+	/**
+	 * @param pCard A card to check
+	 * @return True if pCard is in this set
+	 */
+	boolean contains(Card pCard);
+
+	/**
+	 * @return The size of the group.
+	 */
+	int size();
+	
+	/**
+	 * @return true if the object represents a group.
+	 */
+	boolean isGroup();
+	
+	/**
+	 * @return true if the object represents a run.
+	 */
+	boolean isRun();
+
+	@Override
+	public Iterator<Card> iterator() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+}

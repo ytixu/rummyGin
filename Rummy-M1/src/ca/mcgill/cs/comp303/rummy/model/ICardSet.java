@@ -25,4 +25,5 @@ public interface ICardSet extends Iterable<Card>
 	 * @return true if the object represents a run.
 	 */
 	boolean isRun();
+
 }

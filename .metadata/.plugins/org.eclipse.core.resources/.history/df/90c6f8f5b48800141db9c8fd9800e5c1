@@ -1,0 +1,44 @@
+package ca.mcgill.cs.comp303.rummy.model;
+
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Set;
+
+public class GroupSet implements ICardSet{
+
+	private HashSet<Card> aSet;
+	
+	public GroupSet(Set<Card> pCards){
+		aSet = new HashSet<Card>(pCards);
+	}
+	
+	@Override
+	public Iterator<Card> iterator() {
+		return aSet.iterator();
+	}
+
+	@Override
+	public boolean contains(Card pCard) {
+		assert (pCard != null);
+		return aSet.contains(pCard);
+	}
+
+	@Override
+	public int size() {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public boolean isGroup() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isRun() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+}

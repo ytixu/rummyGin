@@ -1,0 +1,192 @@
+package ca.mcgill.cs.comp303.rummy.model;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.HashSet;
+import java.util.Set;
+
+/**
+ * Models a hand of 10 cards. The hand is not sorted. Not threadsafe.
+ * The hand is a set: adding the same card twice will not add duplicates
+ * of the card.
+ * @inv size() > 0
+ * @inv size() <= HAND_SIZE
+ */
+public class Hand
+{
+	public static final int HANDSIZE = 10;
+	private HashSet<Card> aCards;
+	/**
+	 * Creates a new, empty hand.
+	 */
+	public Hand()
+	{
+		aCards = new HashSet<Card>();
+	}
+	
+	/**
+	 * Adds pCard to the list of unmatched cards.
+	 * If the card is already in the hand, it is not added.
+	 * @param pCard The card to add.
+	 * @throws HandException if the hand is complete.
+	 * @throws HandException if the card is already in the hand.
+	 * @pre pCard != null
+	 */
+	public void add( Card pCard )
+	{
+		assert (pCard != null);
+		if (isComplete()) throw new HandException("Complete hand.");
+		if (contains(pCard)) throw new HandException("Already in hand.");
+		aCards.add(pCard);
+	}
+	
+	/**
+	 * Remove pCard from the hand and break any matched set
+	 * that the card is part of. Does nothing if
+	 * pCard is not in the hand.
+	 * @param pCard The card to remove.
+	 * @pre pCard != null
+	 */
+	public void remove( Card pCard )
+	{
+		assert (pCard != null);
+		aCards.remove(pCard);
+	}
+	
+	/**
+	 * @return True if the hand is complete.
+	 */
+	public boolean isComplete()
+	{
+		return aCards.size() == HANDSIZE;
+	}
+	
+	/**
+	 * Removes all the cards from the hand.
+	 */
+	public void clear()
+	{
+		aCards.clear();
+	}
+	
+	/**
+	 * @return A copy of the set of matched sets
+	 */
+	public Set<ICardSet> getMatchedSets()
+	{
+		return null; // TODO
+	}
+	
+	/**
+	 * @return A copy of the set of unmatched cards.
+	 */
+	public Set<Card> getUnmatchedCards()
+	{
+		return null; // TODO
+	}
+	
+	/**
+	 * @return The number of cards in the hand.
+	 */
+	public int size()
+	{
+		return aCards.size();
+	}
+	
+	/**
+	 * Determines if pCard is already in the hand, either as an
+	 * unmatched card or as part of a set.
+	 * @param pCard The card to check.
+	 * @return true if the card is already in the hand.
+	 * @pre pCard != null
+	 */
+	public boolean contains( Card pCard )
+	{
+		assert (pCard != null);
+		return aCards.contains(pCard);
+	}
+	
+	/**
+	 * @return The total point value of the unmatched cards in this hand.
+	 */
+	public int score()
+	{
+		return Integer.MAX_VALUE; // TODO
+	}
+	
+	/**
+	 * Create groups
+	 * @return a set of groups
+	 */
+	public Set<ICardSet> createGroups()
+	{
+		Comparator<Card> groupComparator = new Comparator<Card>(){
+			@Override
+			public int compare(Card arg0, Card arg1) {
+				return arg0.getRank().compareTo(arg0.getRank());
+			}
+		};
+		ArrayList<Card> sorted = new ArrayList<Card>(aCards);
+		sorted.sort(groupComparator);
+		HashSet<ICardSet> sets = new HashSet<ICardSet>();
+		for (int i=0; i<sorted.size(); i++){
+			for (int j=i+1; j<sorted.size(); j++){
+				if (groupComparator.compare(sorted.get(i), sorted.get(j)) != 0){
+					if (i+2<j){
+						HashSet<Card> temp = new HashSet<Card>();
+						for (int k = 1; k<j; k++){
+							temp.add(sorted.get(k));
+						}
+						sets.add(new GroupSet(temp));
+					}else{
+						break;
+					}
+				}
+				
+			}
+		}
+		return sets;
+	}
+	
+	/**
+	 * Creates runs
+	 * @return a set of runs
+	 */
+	public Set<ICardSet> createRun( Set<Card> pCards )
+	{
+		Comparator<Card> runComparator = new Comparator<Card>(){
+			@Override
+			public int compare(Card arg0, Card arg1) {
+				return arg0.compareTo(arg1);
+			}
+		};
+		ArrayList<Card> sorted = new ArrayList<Card>(aCards);
+		sorted.sort(runComparator);
+		HashSet<ICardSet> sets = new HashSet<ICardSet>();
+		for (int i=0; i<sorted.size(); i++){
+			for (int j=i+1; j<sorted.size(); j++){
+				if (sorted.get(j).hashCode() - sorted.get(i).hashCode() != 1){
+					if (i+2<j){
+						HashSet<Card> temp = new HashSet<Card>();
+						for (int k = 1; k<j; k++){
+							temp.add(sorted.get(k));
+						}
+						sets.add(new GroupSet(temp));
+					}else{
+						break;
+					}
+				}
+				
+			}
+		}
+		return sets;
+	}
+	
+	/**
+	 * Calculates the matching of cards into groups and runs that
+	 * results in the lowest amount of points for unmatched cards.
+	 */
+	public void autoMatch()
+	{
+	}
+}

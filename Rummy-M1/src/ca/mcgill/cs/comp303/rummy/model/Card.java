@@ -22,6 +22,7 @@ public final class Card implements Comparable<Card>
 	
 	private final Suit aSuit;
 	
+	
 	/**
 	 * Create a new card object. 
 	 * @param pRank The rank of the card.
@@ -70,7 +71,7 @@ public final class Card implements Comparable<Card>
 	 */
 	public int compareTo(Card pCard)
 	{
-		return Integer.MAX_VALUE; // TODO Complete this code.
+		return hashCode() - pCard.hashCode();
 	}
 
 	/**
@@ -82,7 +83,7 @@ public final class Card implements Comparable<Card>
 	@Override
 	public boolean equals( Object pCard ) 
 	{
-		return true; // TODO Complete this code.
+		return hashCode() == pCard.hashCode();
 	}
 
 	/** 
@@ -93,6 +94,6 @@ public final class Card implements Comparable<Card>
 	@Override
 	public int hashCode() 
 	{
-		return Integer.MAX_VALUE; // TODO Complete this code.
+		return aRank.ordinal() + aSuit.ordinal()*13;
 	}
 }

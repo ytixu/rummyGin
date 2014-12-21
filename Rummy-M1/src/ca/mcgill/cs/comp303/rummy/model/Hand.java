@@ -1,6 +1,12 @@
 package ca.mcgill.cs.comp303.rummy.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashSet;
 import java.util.Set;
+import java.util.Stack;
 
 /**
  * Models a hand of 10 cards. The hand is not sorted. Not threadsafe.
@@ -11,12 +17,14 @@ import java.util.Set;
  */
 public class Hand
 {
+	public static final int HANDSIZE = 10;
+	private HashSet<Card> aCards;
 	/**
 	 * Creates a new, empty hand.
 	 */
 	public Hand()
 	{
-		// TODO
+		aCards = new HashSet<Card>();
 	}
 	
 	/**
@@ -29,7 +37,10 @@ public class Hand
 	 */
 	public void add( Card pCard )
 	{
-		// TODO
+		assert (pCard != null);
+		if (isComplete()) throw new HandException("Complete hand.");
+		if (contains(pCard)) throw new HandException("Already in hand.");
+		aCards.add(pCard);
 	}
 	
 	/**
@@ -41,7 +52,8 @@ public class Hand
 	 */
 	public void remove( Card pCard )
 	{
-		// TODO
+		assert (pCard != null);
+		aCards.remove(pCard);
 	}
 	
 	/**
@@ -49,7 +61,7 @@ public class Hand
 	 */
 	public boolean isComplete()
 	{
-		return true; // TODO
+		return aCards.size() == HANDSIZE;
 	}
 	
 	/**
@@ -57,7 +69,7 @@ public class Hand
 	 */
 	public void clear()
 	{
-		// TODO
+		aCards.clear();
 	}
 	
 	/**
@@ -81,7 +93,7 @@ public class Hand
 	 */
 	public int size()
 	{
-		return Integer.MAX_VALUE; // TODO
+		return aCards.size();
 	}
 	
 	/**
@@ -93,7 +105,8 @@ public class Hand
 	 */
 	public boolean contains( Card pCard )
 	{
-		return false; // TODO
+		assert (pCard != null);
+		return aCards.contains(pCard);
 	}
 	
 	/**
@@ -105,27 +118,77 @@ public class Hand
 	}
 	
 	/**
-	 * Creates a group of cards of the same rank.
-	 * @param pCards The cards to groups
-	 * @pre pCards != null
-	 * @throws HandException If the cards in pCard are not all unmatched
-	 * cards of the hand or if the group is not a valid group.
+	 * Create groups
+	 * @return a set of groups
 	 */
-	public void createGroup( Set<Card> pCards )
+	public Set<ICardSet> createGroups()
 	{
-		// TODO
+		Comparator<Card> groupComparator = new Comparator<Card>(){
+			@Override
+			public int compare(Card arg0, Card arg1) {
+				return arg0.getRank().compareTo(arg0.getRank());
+			}
+		};
+		ArrayList<Card> sorted = new ArrayList<Card>(aCards);
+		sorted.sort(groupComparator);
+		HashSet<ICardSet> sets = new HashSet<ICardSet>();
+		for (int i=0; i<sorted.size(); i++){
+			for (int j=i+1; j<sorted.size(); j++){
+				if (groupComparator.compare(sorted.get(i), sorted.get(j)) != 0){
+					if (i+2<j){
+						HashSet<Card> temp = new HashSet<Card>();
+						for (int k = 1; k<j; k++){
+							temp.add(sorted.get(k));
+						}
+						sets.add(new GroupSet(temp));
+					}else{
+						break;
+					}
+				}
+				
+			}
+		}
+		return sets;
 	}
 	
 	/**
-	 * Creates a run of cards of the same suit.
-	 * @param pCards The cards to group in a run
-	 * @pre pCards != null
-	 * @throws HandException If the cards in pCard are not all unmatched
-	 * cards of the hand or if the group is not a valid group.
+	 * Creates runs
+	 * @return a set of runs
 	 */
-	public void createRun( Set<Card> pCards )
+	public Set<ICardSet> createRun()
 	{
-		// TODO
+		Comparator<Card> runComparator = new Comparator<Card>(){
+			@Override
+			public int compare(Card arg0, Card arg1) {
+				return arg0.compareTo(arg1);
+			}
+		};
+		ArrayList<Card> sorted = new ArrayList<Card>(aCards);
+		sorted.sort(runComparator);
+		HashSet<ICardSet> sets = new HashSet<ICardSet>();
+		for (int i=0; i<sorted.size(); i++){
+			for (int j=i+1; j<sorted.size(); j++){
+				if (runComparator.compare(sorted.get(j), sorted.get(i)) != 1){
+					if (i+2<j){
+						HashSet<Card> temp = new HashSet<Card>();
+						for (int k = 1; k<j; k++){
+							temp.add(sorted.get(k));
+						}
+						sets.add(new RunSet(temp));
+					}else{
+						break;
+					}
+				}
+				
+			}
+		}
+		return sets;
+	}
+	
+	private int recursiveAutoMatch(Stack<ICardSet> sets, Set<ICardSet> result, int score){
+		if (sets.isEmpty()) return score;
+		ICardSet first = sets.pop();
+		Set<ICardSet> resultClone = new Set<ICardSet>();
 	}
 	
 	/**
@@ -134,5 +197,8 @@ public class Hand
 	 */
 	public void autoMatch()
 	{
+		Set<ICardSet> result = createGroups();
+		Stack<ICardSet> sets = new Stack<ICardSet>();
+		sets.addAll(createRun());
 	}
 }
