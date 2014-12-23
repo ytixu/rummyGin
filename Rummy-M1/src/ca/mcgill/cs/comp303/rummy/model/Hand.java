@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
 
@@ -15,16 +18,23 @@ import java.util.Stack;
  * @inv size() > 0
  * @inv size() <= HAND_SIZE
  */
-public class Hand
+public class Hand implements Iterable<Card>
 {
 	public static final int HANDSIZE = 10;
-	private HashSet<Card> aCards;
+	private static final int MAX_POINT = 10;
+	
+	private HashMap<Card, Boolean> aCards;
+	private HashSet<ICardSet> aMatchSet;
+	private boolean autoMatchCalled;
+	
 	/**
 	 * Creates a new, empty hand.
 	 */
 	public Hand()
 	{
-		aCards = new HashSet<Card>();
+		aCards = new HashMap<Card, Boolean>();
+		aMatchSet = null;
+		autoMatchCalled = false;
 	}
 	
 	/**
@@ -40,7 +50,8 @@ public class Hand
 		assert (pCard != null);
 		if (isComplete()) throw new HandException("Complete hand.");
 		if (contains(pCard)) throw new HandException("Already in hand.");
-		aCards.add(pCard);
+		aCards.put(pCard, false);
+		autoMatchCalled = false;
 	}
 	
 	/**
@@ -54,6 +65,7 @@ public class Hand
 	{
 		assert (pCard != null);
 		aCards.remove(pCard);
+		autoMatchCalled = false;
 	}
 	
 	/**
@@ -73,11 +85,21 @@ public class Hand
 	}
 	
 	/**
+	 * Reset automatch
+	 */
+	public void reset(){
+		for (Card c : this){
+			aCards.put(c, false);
+		}
+		aMatchSet = null;
+	}
+	
+	/**
 	 * @return A copy of the set of matched sets
 	 */
 	public Set<ICardSet> getMatchedSets()
 	{
-		return null; // TODO
+		return aMatchSet;
 	}
 	
 	/**
@@ -85,7 +107,13 @@ public class Hand
 	 */
 	public Set<Card> getUnmatchedCards()
 	{
-		return null; // TODO
+		HashSet<Card> cards = new HashSet<Card>(aCards.keySet());
+		for (Card c : this){
+			if (aCards.get(c)){
+				cards.remove(c);
+			}
+		}
+		return cards;
 	}
 	
 	/**
@@ -106,7 +134,7 @@ public class Hand
 	public boolean contains( Card pCard )
 	{
 		assert (pCard != null);
-		return aCards.contains(pCard);
+		return aCards.containsKey(pCard);
 	}
 	
 	/**
@@ -114,7 +142,17 @@ public class Hand
 	 */
 	public int score()
 	{
-		return Integer.MAX_VALUE; // TODO
+		int score = 0;
+		for (Map.Entry pair : aCards.entrySet()){
+			if (! (Boolean) pair.getValue()){
+				if (((Card) pair.getKey()).getRank().ordinal() >= MAX_POINT){
+					score += MAX_POINT;
+				}else{
+					score += ((Card) pair.getKey()).getRank().ordinal();
+				}
+			}
+		}
+		return score;
 	}
 	
 	/**
@@ -129,7 +167,7 @@ public class Hand
 				return arg0.getRank().compareTo(arg0.getRank());
 			}
 		};
-		ArrayList<Card> sorted = new ArrayList<Card>(aCards);
+		ArrayList<Card> sorted = new ArrayList<Card>(aCards.keySet());
 		sorted.sort(groupComparator);
 		HashSet<ICardSet> sets = new HashSet<ICardSet>();
 		for (int i=0; i<sorted.size(); i++){
@@ -163,7 +201,7 @@ public class Hand
 				return arg0.compareTo(arg1);
 			}
 		};
-		ArrayList<Card> sorted = new ArrayList<Card>(aCards);
+		ArrayList<Card> sorted = new ArrayList<Card>(aCards.keySet());
 		sorted.sort(runComparator);
 		HashSet<ICardSet> sets = new HashSet<ICardSet>();
 		for (int i=0; i<sorted.size(); i++){
@@ -185,10 +223,43 @@ public class Hand
 		return sets;
 	}
 	
-	private int recursiveAutoMatch(Stack<ICardSet> sets, Set<ICardSet> result, int score){
-		if (sets.isEmpty()) return score;
+	private HashMap<Integer, HashSet<ICardSet>> recursiveAutoMatch(Stack<ICardSet> sets){
+		if (sets.isEmpty()) return new HashMap<Integer, HashSet<ICardSet>>();
 		ICardSet first = sets.pop();
-		Set<ICardSet> resultClone = new Set<ICardSet>();
+		int score = 0;
+		for (Card c : first){
+			if (c.getRank().ordinal() >= MAX_POINT){
+				score += MAX_POINT;
+			}else{
+				score += c.getRank().ordinal();
+			}
+		}
+		HashMap<Integer, HashSet<ICardSet>> withFirst = recursiveAutoMatch(sets);
+		if (withFirst.isEmpty()){
+			withFirst.put(score, new HashSet<ICardSet>(Arrays.asList(first)));
+			withFirst.put(0, new HashSet<ICardSet>());
+		}else{
+			HashMap<Integer, HashSet<ICardSet>> temp = new HashMap<Integer, HashSet<ICardSet>>();
+			for (Map.Entry pair : withFirst.entrySet()){
+				boolean contains = false;
+				for (ICardSet s : (HashSet<ICardSet>) pair.getValue()){
+					for (Card c : s){
+						if (first.contains(c)){
+							contains = true;
+							break;
+						}
+					}
+					if (contains) break;
+				}
+				if (!contains){
+					HashSet<ICardSet> newSet = new HashSet<ICardSet>((HashSet<ICardSet>)pair.getKey());
+					newSet.add(first);
+					temp.put((Integer) pair.getKey() + score, newSet);
+				}
+			}
+			withFirst.putAll(temp);
+		}
+		return withFirst;
 	}
 	
 	/**
@@ -197,8 +268,33 @@ public class Hand
 	 */
 	public void autoMatch()
 	{
-		Set<ICardSet> result = createGroups();
+		if (autoMatchCalled) return; // automatch already called 
+		if (aMatchSet != null) reset();
 		Stack<ICardSet> sets = new Stack<ICardSet>();
 		sets.addAll(createRun());
+		sets.addAll(createGroups());
+		HashMap<Integer, HashSet<ICardSet>> allCombos = recursiveAutoMatch(sets);
+		
+		// maximize points in matches = minimize points in deadwook
+		int maxPoint = 0;
+		HashSet<ICardSet> optimal = null; // TODO: ties
+		for (Map.Entry pair : allCombos.entrySet()){
+			if (maxPoint < (Integer) pair.getKey()){
+				maxPoint = (Integer) pair.getKey();
+				optimal = (HashSet<ICardSet>) pair.getValue();
+			}
+		}
+		if (optimal == null) return;
+		for (ICardSet s : optimal){
+			for (Card c : s){
+				aCards.put(c, true);
+			}
+		}
+		aMatchSet = optimal;
+	}
+
+	@Override
+	public Iterator<Card> iterator() {
+		return aCards.keySet().iterator();
 	}
 }
