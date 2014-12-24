@@ -164,24 +164,35 @@ public class Hand implements Iterable<Card>
 		Comparator<Card> groupComparator = new Comparator<Card>(){
 			@Override
 			public int compare(Card arg0, Card arg1) {
-				return arg0.getRank().compareTo(arg0.getRank());
+				return arg0.getRank().compareTo(arg1.getRank());
 			}
 		};
 		ArrayList<Card> sorted = new ArrayList<Card>(aCards.keySet());
 		sorted.sort(groupComparator);
 		HashSet<ICardSet> sets = new HashSet<ICardSet>();
 		for (int i=0; i<sorted.size(); i++){
+//			System.out.println(sorted.get(i).toString());
 			for (int j=i+1; j<sorted.size(); j++){
-				if (groupComparator.compare(sorted.get(i), sorted.get(j)) != 0){
-					if (i+2<j){
+//				System.out.println("~~"+sorted.get(j).toString());
+				if (groupComparator.compare(sorted.get(i), sorted.get(j)) == 0){
+//					System.out.println(j + " " + i);
+					if (j-i>1){
+//						System.out.println("~~3~~"+sorted.get(j).toString());
 						HashSet<Card> temp = new HashSet<Card>();
-						for (int k = 1; k<j; k++){
+						for (int k = i; k<j+1; k++){
 							temp.add(sorted.get(k));
 						}
 						sets.add(new GroupSet(temp));
-					}else{
-						break;
+//						System.out.println(temp.toString());
+						if (temp.size() == 4){
+							sets.add(new RunSet(new HashSet<Card>(
+									Arrays.asList(sorted.get(i), sorted.get(i+1), sorted.get(j)))));
+							sets.add(new RunSet(new HashSet<Card>(
+									Arrays.asList(sorted.get(i), sorted.get(i+2), sorted.get(j)))));
+						}
 					}
+				}else{
+					break;
 				}
 				
 			}
@@ -206,18 +217,19 @@ public class Hand implements Iterable<Card>
 		HashSet<ICardSet> sets = new HashSet<ICardSet>();
 		for (int i=0; i<sorted.size(); i++){
 			for (int j=i+1; j<sorted.size(); j++){
-				if (runComparator.compare(sorted.get(j), sorted.get(i)) != 1){
-					if (i+2<j){
+//				System.out.println(sorted.get(i).toString() + " " + sorted.get(j).toString() + 
+//						runComparator.compare(sorted.get(j), sorted.get(i)));
+				if (runComparator.compare(sorted.get(j), sorted.get(j-1)) == 1){
+					if (j-i > 1){
 						HashSet<Card> temp = new HashSet<Card>();
-						for (int k = 1; k<j; k++){
+						for (int k = i; k<j+1; k++){
 							temp.add(sorted.get(k));
 						}
 						sets.add(new RunSet(temp));
-					}else{
-						break;
 					}
+				}else{
+					break;
 				}
-				
 			}
 		}
 		return sets;
@@ -240,21 +252,27 @@ public class Hand implements Iterable<Card>
 			withFirst.put(0, new HashSet<ICardSet>());
 		}else{
 			HashMap<Integer, HashSet<ICardSet>> temp = new HashMap<Integer, HashSet<ICardSet>>();
+			System.out.println(withFirst.toString());
 			for (Map.Entry pair : withFirst.entrySet()){
 				boolean contains = false;
-				for (ICardSet s : (HashSet<ICardSet>) pair.getValue()){
-					for (Card c : s){
-						if (first.contains(c)){
-							contains = true;
-							break;
+				if (!((HashSet<ICardSet>) pair.getValue()).isEmpty()){
+					for (ICardSet s : (HashSet<ICardSet>) pair.getValue()){
+						for (Card c : s){
+							if (first.contains(c)){
+								contains = true;
+								break;
+							}
 						}
+						if (contains) break;
 					}
-					if (contains) break;
 				}
 				if (!contains){
-					HashSet<ICardSet> newSet = new HashSet<ICardSet>((HashSet<ICardSet>)pair.getKey());
-					newSet.add(first);
-					temp.put((Integer) pair.getKey() + score, newSet);
+					int key = (Integer) pair.getKey() + score;
+					temp.put(key, new HashSet<ICardSet>());
+					temp.get(key).add(first);
+					System.out.println(temp.toString());
+					if (!((HashSet<ICardSet>) pair.getValue()).isEmpty())
+						temp.get(key).addAll((HashSet<ICardSet>)pair.getKey());
 				}
 			}
 			withFirst.putAll(temp);
@@ -273,8 +291,11 @@ public class Hand implements Iterable<Card>
 		Stack<ICardSet> sets = new Stack<ICardSet>();
 		sets.addAll(createRun());
 		sets.addAll(createGroups());
+//		for (ICardSet s: sets){
+//			System.out.println(s.toString());
+//		}
 		HashMap<Integer, HashSet<ICardSet>> allCombos = recursiveAutoMatch(sets);
-		
+
 		// maximize points in matches = minimize points in deadwook
 		int maxPoint = 0;
 		HashSet<ICardSet> optimal = null; // TODO: ties

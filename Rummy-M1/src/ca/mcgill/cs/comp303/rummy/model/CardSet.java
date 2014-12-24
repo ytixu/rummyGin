@@ -45,4 +45,12 @@ public abstract class CardSet implements ICardSet
 	 * @return true if the object represents a run.
 	 */
 	public abstract boolean isRun();
+	
+	/**
+	 * For printing.
+	 * @return the string to print
+	 */
+	public String toString(){
+		return aSet.toString();
+	}
 }
