@@ -148,7 +148,7 @@ public class Hand implements Iterable<Card>
 				if (((Card) pair.getKey()).getRank().ordinal() >= MAX_POINT){
 					score += MAX_POINT;
 				}else{
-					score += ((Card) pair.getKey()).getRank().ordinal();
+					score += ((Card) pair.getKey()).getRank().ordinal()+1;
 				}
 			}
 		}
@@ -171,19 +171,14 @@ public class Hand implements Iterable<Card>
 		sorted.sort(groupComparator);
 		HashSet<ICardSet> sets = new HashSet<ICardSet>();
 		for (int i=0; i<sorted.size(); i++){
-//			System.out.println(sorted.get(i).toString());
 			for (int j=i+1; j<sorted.size(); j++){
-//				System.out.println("~~"+sorted.get(j).toString());
 				if (groupComparator.compare(sorted.get(i), sorted.get(j)) == 0){
-//					System.out.println(j + " " + i);
 					if (j-i>1){
-//						System.out.println("~~3~~"+sorted.get(j).toString());
 						HashSet<Card> temp = new HashSet<Card>();
 						for (int k = i; k<j+1; k++){
 							temp.add(sorted.get(k));
 						}
 						sets.add(new GroupSet(temp));
-//						System.out.println(temp.toString());
 						if (temp.size() == 4){
 							sets.add(new RunSet(new HashSet<Card>(
 									Arrays.asList(sorted.get(i), sorted.get(i+1), sorted.get(j)))));
@@ -217,8 +212,6 @@ public class Hand implements Iterable<Card>
 		HashSet<ICardSet> sets = new HashSet<ICardSet>();
 		for (int i=0; i<sorted.size(); i++){
 			for (int j=i+1; j<sorted.size(); j++){
-//				System.out.println(sorted.get(i).toString() + " " + sorted.get(j).toString() + 
-//						runComparator.compare(sorted.get(j), sorted.get(i)));
 				if (runComparator.compare(sorted.get(j), sorted.get(j-1)) == 1){
 					if (j-i > 1){
 						HashSet<Card> temp = new HashSet<Card>();
@@ -235,28 +228,30 @@ public class Hand implements Iterable<Card>
 		return sets;
 	}
 	
-	private HashMap<Integer, HashSet<ICardSet>> recursiveAutoMatch(Stack<ICardSet> sets){
-		if (sets.isEmpty()) return new HashMap<Integer, HashSet<ICardSet>>();
+	private HashMap<HashSet<ICardSet>, Integer> recursiveAutoMatch(Stack<ICardSet> sets){
+		// base case, if empty stack
+		if (sets.isEmpty()) return new HashMap<HashSet<ICardSet>, Integer>();
+		
 		ICardSet first = sets.pop();
+		// get the points
 		int score = 0;
 		for (Card c : first){
 			if (c.getRank().ordinal() >= MAX_POINT){
 				score += MAX_POINT;
 			}else{
-				score += c.getRank().ordinal();
+				score += c.getRank().ordinal()+1;
 			}
 		}
-		HashMap<Integer, HashSet<ICardSet>> withFirst = recursiveAutoMatch(sets);
-		if (withFirst.isEmpty()){
-			withFirst.put(score, new HashSet<ICardSet>(Arrays.asList(first)));
-			withFirst.put(0, new HashSet<ICardSet>());
-		}else{
-			HashMap<Integer, HashSet<ICardSet>> temp = new HashMap<Integer, HashSet<ICardSet>>();
-			System.out.println(withFirst.toString());
+		
+		// recursive call
+		HashMap<HashSet<ICardSet>, Integer> withFirst = recursiveAutoMatch(sets);
+		
+		if (!withFirst.isEmpty()){ // check for each combination if we can put "first"
+			HashMap<HashSet<ICardSet>, Integer> temp = new HashMap<HashSet<ICardSet>, Integer>();
 			for (Map.Entry pair : withFirst.entrySet()){
 				boolean contains = false;
-				if (!((HashSet<ICardSet>) pair.getValue()).isEmpty()){
-					for (ICardSet s : (HashSet<ICardSet>) pair.getValue()){
+				if (!((HashSet<ICardSet>) pair.getKey()).isEmpty()){
+					for (ICardSet s : (HashSet<ICardSet>) pair.getKey()){
 						for (Card c : s){
 							if (first.contains(c)){
 								contains = true;
@@ -267,16 +262,17 @@ public class Hand implements Iterable<Card>
 					}
 				}
 				if (!contains){
-					int key = (Integer) pair.getKey() + score;
-					temp.put(key, new HashSet<ICardSet>());
-					temp.get(key).add(first);
-					System.out.println(temp.toString());
-					if (!((HashSet<ICardSet>) pair.getValue()).isEmpty())
-						temp.get(key).addAll((HashSet<ICardSet>)pair.getKey());
+					int val = (Integer) pair.getValue() + score;
+					HashSet<ICardSet> key = new HashSet<ICardSet>();
+					key.add(first);
+					if (!((HashSet<ICardSet>) pair.getKey()).isEmpty())
+						key.addAll((HashSet<ICardSet>)pair.getKey());
+					temp.put(key, val);
 				}
 			}
 			withFirst.putAll(temp);
 		}
+		withFirst.put(new HashSet<ICardSet>(Arrays.asList(first)), score);
 		return withFirst;
 	}
 	
@@ -291,18 +287,15 @@ public class Hand implements Iterable<Card>
 		Stack<ICardSet> sets = new Stack<ICardSet>();
 		sets.addAll(createRun());
 		sets.addAll(createGroups());
-//		for (ICardSet s: sets){
-//			System.out.println(s.toString());
-//		}
-		HashMap<Integer, HashSet<ICardSet>> allCombos = recursiveAutoMatch(sets);
-
+		HashMap<HashSet<ICardSet>, Integer> allCombos = recursiveAutoMatch(sets);
+		
 		// maximize points in matches = minimize points in deadwook
 		int maxPoint = 0;
 		HashSet<ICardSet> optimal = null; // TODO: ties
 		for (Map.Entry pair : allCombos.entrySet()){
-			if (maxPoint < (Integer) pair.getKey()){
-				maxPoint = (Integer) pair.getKey();
-				optimal = (HashSet<ICardSet>) pair.getValue();
+			if (maxPoint < (Integer) pair.getValue()){
+				maxPoint = (Integer) pair.getValue();
+				optimal = (HashSet<ICardSet>) pair.getKey();
 			}
 		}
 		if (optimal == null) return;
