@@ -65,7 +65,7 @@ public class Hand implements Iterable<Card>
 	{
 		assert (pCard != null);
 		aCards.remove(pCard);
-		autoMatchCalled = false;
+		if (!isComplete()) reset();
 	}
 	
 	/**
@@ -82,12 +82,14 @@ public class Hand implements Iterable<Card>
 	public void clear()
 	{
 		aCards.clear();
+		aMatchSet = null;
+		autoMatchCalled = false;
 	}
 	
 	/**
 	 * Reset automatch
 	 */
-	public void reset(){
+	private void reset(){
 		for (Card c : this){
 			aCards.put(c, false);
 		}
@@ -99,7 +101,8 @@ public class Hand implements Iterable<Card>
 	 */
 	public Set<ICardSet> getMatchedSets()
 	{
-		return aMatchSet;
+		if (autoMatchCalled)return aMatchSet;
+		return null;
 	}
 	
 	/**
@@ -107,6 +110,7 @@ public class Hand implements Iterable<Card>
 	 */
 	public Set<Card> getUnmatchedCards()
 	{
+		if (!autoMatchCalled) return null;
 		HashSet<Card> cards = new HashSet<Card>(aCards.keySet());
 		for (Card c : this){
 			if (aCards.get(c)){
@@ -305,6 +309,7 @@ public class Hand implements Iterable<Card>
 			}
 		}
 		aMatchSet = optimal;
+		autoMatchCalled = true;
 	}
 
 	@Override

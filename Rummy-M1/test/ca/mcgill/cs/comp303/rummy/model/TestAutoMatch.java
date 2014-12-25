@@ -56,6 +56,25 @@ public class TestAutoMatch
 		assertEquals(aScore, aHand.score());
 	}
 	
+	@Test 
+	public void testClear(){
+		aHand.autoMatch();
+		aHand.clear();
+		assertNull(aHand.getMatchedSets());
+	}
+	
+	@Test
+	public void testReset(){
+		Card c = new Card(Rank.EIGHT, Suit.DIAMONDS);
+		aHand.autoMatch();
+		aHand.remove(c);
+		assertNull(aHand.getMatchedSets());
+		aHand.autoMatch();
+		assertNull(aHand.getMatchedSets());
+		aHand.add(c);
+		assertNull(aHand.getMatchedSets());
+	}
+	
 	/*
 	* From mycourses
 	*/
