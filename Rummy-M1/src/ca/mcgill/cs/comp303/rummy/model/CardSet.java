@@ -52,7 +52,10 @@ public abstract class CardSet implements ICardSet
 	 * @return the string to print
 	 */
 	public String toString(){
-		return aSet.toString();
+		String type = "SINGLE";
+		if (isRun()) type = "RUN";
+		else if (isGroup()) type = "GROUP";
+		return type + " : " + aSet.toString();
 	}
 	
 	@Override
