@@ -8,11 +8,14 @@ import ca.mcgill.cs.comp303.rummy.model.Hand;
 import ca.mcgill.cs.comp303.rummy.model.ICardSet;
 
 public abstract class AbstractPlayer implements Player{
+	private final int MAXSCORE = 10;
 	
 	private IGameEngineSetter gameEngine;
 	private Hand aHand;
 	private String aName;
 	private int aScore;
+	private int accumulatedScore;
+	private int gameWon;
 	private boolean aHasLayout;
 	
 	public AbstractPlayer(String name, IGameEngineSetter gameSetter){
@@ -20,6 +23,17 @@ public abstract class AbstractPlayer implements Player{
 		aHand = new Hand();
 		aName = name;
 		aScore = 0;
+		accumulatedScore = 0;
+		gameWon = 0;
+		aHasLayout = false;
+	}
+	
+	@Override
+	public void clear(){
+		aHand.clear();
+		accumulatedScore += aScore;
+		aScore = 0;
+		aHasLayout = false;
 	}
 
 	@Override
@@ -33,8 +47,22 @@ public abstract class AbstractPlayer implements Player{
 	@Override
 	public abstract void discard();
 
+	/**
+	 * Strategy to knock.
+	 */
+	protected abstract void strategyKnock();
+	
+	/**
+	 * If cannot knock, need to handle it.
+	 */
+	protected abstract void handleBadKnock();
+	
 	@Override
-	public abstract void knock();
+	public void knock(){
+		strategyKnock();
+		if (getHandScore() > MAXSCORE) handleBadKnock();
+		gameEngine.knock();
+	}
 	
 	/**
 	 * Strategy to add deadwook to matched sets.
@@ -72,6 +100,21 @@ public abstract class AbstractPlayer implements Player{
 	@Override
 	public int getScore(){
 		return aScore;
+	}
+	
+	@Override
+	public int getTotalScore(){
+		return accumulatedScore;
+	}
+	
+	@Override
+	public int getGameWon(){
+		return gameWon;
+	}
+	
+	@Override
+	public void wonAGame(){
+		gameWon++;
 	}
 	
 	/**

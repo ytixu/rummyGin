@@ -23,9 +23,9 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 		LINEBONUS (10),
 		ALLWIN (200);
 		
-		private int value;
+		private int bonus;
 		POINTS(int p){
-			value = p;
+			bonus = p;
 		}
 	}
 
@@ -36,7 +36,8 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 	private String lastMove;
 	private int turn;
 	private Set<ICardSet> aMatchedSet = null;
-	private int winner;
+	private int knocker;
+	private ArrayList<Integer> winners;
 	
 	public GameEngine(Player... pPlayers){
 		aPlayers = new Player[pPlayers.length];
@@ -56,6 +57,7 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 				}
 			}
 		}
+		winners = new ArrayList<Integer>();
 		lastMove = "New game.\n" + aPlayers.toString() + "\n" 
 				+ aPlayers[turn].toString() + " begins.";
 	}
@@ -64,6 +66,7 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 		aDeck.shuffle();
 		lastMove = "New game.\n" + aPlayers.toString();
 		aMatchedSet = null;
+		winners.clear();
 	}
 	
 	public int nextTurn(){
@@ -91,6 +94,7 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 
 	@Override
 	public void knock() {
+		knocker = turn;
 		lastMove = aPlayers[turn] + " knocks.\n" + aPlayers[turn].getMatchedSets().toString() + 
 					"\nUnmatched cards:" + aPlayers[turn].getDeadwook();
 		
@@ -105,6 +109,7 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 		if (aPlayers[nextTurn()].doneLayout()){
 			lastMove += "\nFinal matched set\n" + aSets.toString();
 			aMatchedSet = aSets;
+			setPoints();
 		}else{
 			aPlayers[nextTurn()].addDeadwook(aSets);
 		}
@@ -137,6 +142,61 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 			for (Player p: aPlayers){
 				p.addCard(aDeck.draw());
 			}
+		}
+	}
+	
+	private void setPoints(){
+		int minScore = Integer.MAX_VALUE;
+		int knockerScore = aPlayers[knocker].getHandScore();
+		for (Player p: aPlayers){
+			if (minScore > p.getHandScore()){
+				minScore = p.getHandScore();
+			}
+		}
+		for (int i = 0; i<aPlayers.length; i++){
+			int temp;
+			// check if it's knocker 
+			if (i == knocker){
+				temp = knockerScore;
+				// check if go gin
+				if (temp == 0){
+					aPlayers[i].updateScore(POINTS.GOGIN.bonus);
+				}
+			}else{
+				temp = aPlayers[i].getHandScore();
+				// check undercut 
+				if (temp > knockerScore){
+					aPlayers[i].updateScore(POINTS.UNDERCUT.bonus);
+				}
+			}
+			aPlayers[i].updateScore(temp - minScore);
+			// check more than 100 points
+			if (aPlayers[i].getScore() > POINTS.ENDGAME.bonus){
+				aPlayers[i].updateScore(POINTS.ENDGAME.bonus);
+				winners.add(i);
+				aPlayers[i].wonAGame();
+			}
+		}
+	}
+	
+	private void endGame(){
+		if (winners.size() == 1){
+			boolean allWin = true;
+			for (int i=0; i<aPlayers.length; i++){
+				if (aPlayers[i].getScore() > 0 && !winners.contains(i)){
+					allWin = false;
+					break;
+				}
+			}
+			if (allWin){
+				aPlayers[winners.get(0)].updateScore(POINTS.ALLWIN.bonus 
+						+ POINTS.LINEBONUS.bonus*aPlayers[winners.get(0)].getGameWon());
+			}
+		}
+		lastMove = "END GAME\n";
+		for (Player p: aPlayers){
+			p.clear();
+			lastMove += p.toString() + ": " + p.getTotalScore() + "\n";
 		}
 	}
 }

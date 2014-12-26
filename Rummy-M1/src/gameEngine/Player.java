@@ -55,10 +55,27 @@ public interface Player extends Iterable<Card>
 	void updateScore(int points);
 	
 	/**
-	 * Get score.
+	 * Get score for current game.
 	 * @return the score as an int
 	 */
 	int getScore();
+	
+	/**
+	 * Get the total score in all games.
+	 * @return the total score 
+	 */
+	int getTotalScore();
+	
+	/**
+	 * Get number of games won.
+	 * @return the number of games won
+	 */
+	int getGameWon();
+
+	/**
+	 * Increment the number of games won.
+	 */
+	void wonAGame();
 	
 	/**
 	 * Get score for a matched set.
@@ -72,4 +89,9 @@ public interface Player extends Iterable<Card>
 	 * @return whether it has or not
 	 */
 	boolean doneLayout();
+
+	/**
+	 * New game. 
+	 */
+	void clear();
 }
