@@ -27,13 +27,27 @@ public abstract class AbstractPlayer implements Player{
 		aHand.add(pCard);
 	}
 	
+	@Override
 	public abstract void pickCard();
 
+	@Override
 	public abstract void discard();
 
+	@Override
 	public abstract void knock();
 	
-	public abstract Set<ICardSet> addDeadwook(Set<ICardSet> pSets);
+	/**
+	 * Strategy to add deadwook to matched sets.
+	 * @param pSets the current matched set
+	 * @return the updated matched sets
+	 */
+	protected abstract Set<ICardSet> strategyAddDeadwook(Set<ICardSet> pSets);
+	
+	@Override
+	public void addDeadwook(Set<ICardSet> pSets){
+		 Set<ICardSet> sets = strategyAddDeadwook(pSets);
+		 gameEngine.layout(sets);
+	}
 
 	@Override
 	public Set<ICardSet> getMatchedSets() {
@@ -60,6 +74,9 @@ public abstract class AbstractPlayer implements Player{
 		return aScore;
 	}
 	
+	/**
+	 * Return name.
+	 */
 	public String toString(){
 		return aName;
 	}
@@ -69,6 +86,7 @@ public abstract class AbstractPlayer implements Player{
 		return aHand.score();
 	}
 	
+	@Override
 	public boolean doneLayout(){
 		return aHasLayout;
 	}

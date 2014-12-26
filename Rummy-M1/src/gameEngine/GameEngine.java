@@ -66,6 +66,10 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 		aMatchedSet = null;
 	}
 	
+	public int nextTurn(){
+		return turn++ % aPlayers.length;
+	}
+	
 	@Override
 	public Card drawFromDeck() {
 		lastMove = aPlayers[turn].toString() + " draws from deck.";
@@ -89,16 +93,21 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 	public void knock() {
 		lastMove = aPlayers[turn] + " knocks.\n" + aPlayers[turn].getMatchedSets().toString() + 
 					"\nUnmatched cards:" + aPlayers[turn].getDeadwook();
-		aPlayers[turn+1].addDeadwook(aPlayers[turn].getMatchedSets());
+		
+		aPlayers[nextTurn()].addDeadwook(aPlayers[turn].getMatchedSets());
 	}
 
 	@Override
 	public void layout(Set<ICardSet> aSets) {
-		turn++;
 		lastMove = aPlayers[turn] + "'s matched set:\n" + aPlayers[turn].getMatchedSets().toString()
-					+ "'s rest:" + aPlayers[turn].getDeadwook() + "\nFinal matched set\n"
-					+ aSets.toString();
-		aMatchedSet = aSets;
+				+ "'s rest:" + aPlayers[turn].getDeadwook();
+		turn = nextTurn();
+		if (aPlayers[nextTurn()].doneLayout()){
+			lastMove += "\nFinal matched set\n" + aSets.toString();
+			aMatchedSet = aSets;
+		}else{
+			aPlayers[nextTurn()].addDeadwook(aSets);
+		}
 	}
 
 	@Override
@@ -122,7 +131,7 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 	public Iterator<Player> getPlayers() {
 		return Arrays.asList(aPlayers).iterator();
 	}
-
+	
 	public void distributeCards(){
 		for (int i=0; i<Hand.HANDSIZE; i++){
 			for (Player p: aPlayers){

@@ -46,7 +46,7 @@ public interface Player extends Iterable<Card>
 	 * @param pSets
 	 * @return updated matched sets
 	 */
-	Set<ICardSet> addDeadwook(Set<ICardSet> pSets);
+	void addDeadwook(Set<ICardSet> pSets);
 	
 	/**
 	 * Update score
