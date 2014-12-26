@@ -1,9 +1,11 @@
 package ca.mcgill.cs.comp303.rummy.model;
 
+import java.util.HashSet;
+
 /**
  * Implementors of this class should be immutable.
  */
-public interface ICardSet extends Iterable<Card>
+public interface ICardSet extends Iterable<Card>, Comparable<ICardSet>
 {
 	/**
 	 * @param pCard A card to check

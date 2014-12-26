@@ -1,5 +1,6 @@
 package ca.mcgill.cs.comp303.rummy.model;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -9,10 +10,10 @@ import java.util.Set;
  */
 public abstract class CardSet implements ICardSet
 {
-	private HashSet<Card> aSet;
+	private ArrayList<Card> aSet;
 	
 	public CardSet(Set<Card> pCards){
-		aSet = new HashSet<Card>(pCards);
+		aSet = new ArrayList<Card>(pCards);
 	}
 	
 	@Override
@@ -52,5 +53,24 @@ public abstract class CardSet implements ICardSet
 	 */
 	public String toString(){
 		return aSet.toString();
+	}
+	
+	@Override
+	public int compareTo(ICardSet set) {
+		if (this.isGroup() && set.isRun()) return 1;
+		if (this.isRun() && set.isGroup()) return -1;
+		int diff = aSet.get(0).hashCode() - set.iterator().next().hashCode();
+		if (diff == 0) return aSet.size() - set.size();
+		return diff;
+	}
+	
+	public boolean equals(ICardSet set){
+		if (isGroup() != set.isGroup() || size() != set.size()) return false;
+		for (Card c: this){
+			if (!set.contains(c)){
+				return false;
+			}
+		}
+		return true;
 	}
 }

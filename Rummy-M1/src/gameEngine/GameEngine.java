@@ -199,4 +199,12 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 			lastMove += p.toString() + ": " + p.getTotalScore() + "\n";
 		}
 	}
+	
+	public void saveGame(){
+		// TODO
+	}
+	
+	public void loadGame(){
+		// TODO
+	}
 }

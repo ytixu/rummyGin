@@ -8,10 +8,10 @@ import ca.mcgill.cs.comp303.rummy.model.Hand;
 import ca.mcgill.cs.comp303.rummy.model.ICardSet;
 
 public abstract class AbstractPlayer implements Player{
-	private final int MAXSCORE = 10;
+	protected IGameEngineSetter gameEngine;
+	protected Hand aHand;
+	protected Card newCard;
 	
-	private IGameEngineSetter gameEngine;
-	private Hand aHand;
 	private String aName;
 	private int aScore;
 	private int accumulatedScore;
@@ -26,6 +26,7 @@ public abstract class AbstractPlayer implements Player{
 		accumulatedScore = 0;
 		gameWon = 0;
 		aHasLayout = false;
+		newCard = null;
 	}
 	
 	@Override
@@ -46,36 +47,22 @@ public abstract class AbstractPlayer implements Player{
 
 	@Override
 	public abstract void discard();
-
-	/**
-	 * Strategy to knock.
-	 */
-	protected abstract void strategyKnock();
-	
-	/**
-	 * If cannot knock, need to handle it.
-	 */
-	protected abstract void handleBadKnock();
 	
 	@Override
-	public void knock(){
-		strategyKnock();
-		if (getHandScore() > MAXSCORE) handleBadKnock();
-		gameEngine.knock();
-	}
-	
-	/**
-	 * Strategy to add deadwook to matched sets.
-	 * @param pSets the current matched set
-	 * @return the updated matched sets
+	/*
+	 * (non-Javadoc)
+	 * @see gameEngine.Player#knock()
+	 * Need to call gameEngine.knock() and handle bad knocking (score greater than 10)
 	 */
-	protected abstract Set<ICardSet> strategyAddDeadwook(Set<ICardSet> pSets);
+	public abstract void knock();
 	
 	@Override
-	public void addDeadwook(Set<ICardSet> pSets){
-		 Set<ICardSet> sets = strategyAddDeadwook(pSets);
-		 gameEngine.layout(sets);
-	}
+	/*
+	 * (non-Javadoc)
+	 * @see gameEngine.Player#addDeadwook(java.util.Set)
+	 * Need to call gameEngine.layout(sets);
+	 */
+	public abstract void addDeadwook(Set<ICardSet> pSets);
 
 	@Override
 	public Set<ICardSet> getMatchedSets() {
