@@ -5,13 +5,14 @@ import java.util.Set;
 import ca.mcgill.cs.comp303.rummy.model.Card;
 import ca.mcgill.cs.comp303.rummy.model.ICardSet;
 
-public interface Player {
-	
+public interface Player extends Iterable<Card>
+{
+
 	/**
-	 * Set the game engine.
-	 * @param gameSetter
+	 * Add a card to the hand.
+	 * @param pCard
 	 */
-	void setGameEngine(IGameEngineSetter gameSetter);
+	void addCard(Card pCard);
 	
 	/**
 	 * Take a card.
@@ -41,14 +42,34 @@ public interface Player {
 	Set<Card> getDeadwook();
 	
 	/**
-	 * Get player's name.
-	 * @return player's name
+	 * Extend deadwook to opponent's knock. 
+	 * @param pSets
+	 * @return updated matched sets
 	 */
-	String getName();
+	Set<ICardSet> addDeadwook(Set<ICardSet> pSets);
 	
 	/**
-	 * Get the cards in hand.
-	 * @return the set of cards in hand
+	 * Update score
+	 * @param points
 	 */
-	Set<Card> getHand();
+	void updateScore(int points);
+	
+	/**
+	 * Get score.
+	 * @return the score as an int
+	 */
+	int getScore();
+	
+	/**
+	 * Get score for a matched set.
+	 * Assumes that the hand is already matched.
+	 * @return the score
+	 */
+	int getHandScore();
+	
+	/**
+	 * Check if the player has already layout its cards.
+	 * @return whether it has or not
+	 */
+	boolean doneLayout();
 }

@@ -1,6 +1,7 @@
 package gameEngine;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Set;
 
 import ca.mcgill.cs.comp303.rummy.model.Card;
@@ -14,10 +15,10 @@ public interface IGameEngineGetter {
 	Card peekDiscard();
 	
 	/**
-	 * Get the cards in each player's hand.
-	 * @return map of player and hand
+	 * Get all players.
+	 * @return a iterator of Player
 	 */
-	HashMap<Player, Set<Card>> getPlayerHand();
+	Iterator<Player> getPlayers();
 	
 	/**
 	 * Get the lated move.

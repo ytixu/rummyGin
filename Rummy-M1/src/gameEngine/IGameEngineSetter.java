@@ -35,12 +35,11 @@ public interface IGameEngineSetter {
 	 * Player knocking.
 	 * @param pMatchedSet
 	 */
-	void knock(Set<ICardSet> pMatchedSet);
+	void knock();
 	
 	/**
-	 * Add a player to the game.
-	 * @param pPlayer
+	 * After opponent knocks, layout matched set and 
+	 * add deadwook to opponent's matched set.
 	 */
-	void addPlayer(Player pPlayer);
-
+	void layout(Set<ICardSet> aSets);
 }
