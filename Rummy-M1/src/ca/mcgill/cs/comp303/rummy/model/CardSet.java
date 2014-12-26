@@ -10,7 +10,7 @@ import java.util.Set;
  */
 public abstract class CardSet implements ICardSet
 {
-	private ArrayList<Card> aSet;
+	protected ArrayList<Card> aSet;
 	
 	public CardSet(Set<Card> pCards){
 		aSet = new ArrayList<Card>(pCards);
