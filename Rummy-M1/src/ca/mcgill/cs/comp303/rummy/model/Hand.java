@@ -2,7 +2,6 @@ package ca.mcgill.cs.comp303.rummy.model;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -52,7 +51,7 @@ public class Hand implements Iterable<Card>
 		if (isComplete()) throw new HandException("Complete hand.");
 		if (contains(pCard)) throw new HandException("Already in hand.");
 		aCards.put(pCard, false);
-		autoMatchCalled = false;
+		reset();
 	}
 	
 	/**
@@ -91,6 +90,7 @@ public class Hand implements Iterable<Card>
 	 * Reset automatch
 	 */
 	public void reset(){
+		if (autoMatchCalled == false) return;
 		for (Card c : this){
 			aCards.put(c, false);
 		}
@@ -164,7 +164,7 @@ public class Hand implements Iterable<Card>
 	 * Create groups
 	 * @return a set of groups
 	 */
-	private Set<ICardSet> createGroups()
+	private ArrayList<ICardSet> createGroups()
 	{
 		Comparator<Card> groupComparator = new Comparator<Card>(){
 			@Override
@@ -174,20 +174,20 @@ public class Hand implements Iterable<Card>
 		};
 		ArrayList<Card> sorted = new ArrayList<Card>(aCards.keySet());
 		sorted.sort(groupComparator);
-		HashSet<ICardSet> sets = new HashSet<ICardSet>();
+		ArrayList<ICardSet> sets = new ArrayList<ICardSet>();
 		for (int i=0; i<sorted.size(); i++){
 			for (int j=i+1; j<sorted.size(); j++){
 				if (groupComparator.compare(sorted.get(i), sorted.get(j)) == 0){
 //					if (j-i>1){
-						HashSet<Card> temp = new HashSet<Card>();
+						ArrayList<Card> temp = new ArrayList<Card>();
 						for (int k = i; k<j+1; k++){
 							temp.add(sorted.get(k));
 						}
 						sets.add(new GroupSet(temp));
 						if (temp.size() == 4){
-							sets.add(new RunSet(new HashSet<Card>(
+							sets.add(new RunSet(new ArrayList<Card>(
 									Arrays.asList(sorted.get(i), sorted.get(i+1), sorted.get(j)))));
-							sets.add(new RunSet(new HashSet<Card>(
+							sets.add(new RunSet(new ArrayList<Card>(
 									Arrays.asList(sorted.get(i), sorted.get(i+2), sorted.get(j)))));
 						}
 //					}
@@ -204,7 +204,7 @@ public class Hand implements Iterable<Card>
 	 * Creates runs
 	 * @return a set of runs
 	 */
-	private Set<ICardSet> createRun()
+	private ArrayList<ICardSet> createRun()
 	{
 		Comparator<Card> runComparator = new Comparator<Card>(){
 			@Override
@@ -214,12 +214,12 @@ public class Hand implements Iterable<Card>
 		};
 		ArrayList<Card> sorted = new ArrayList<Card>(aCards.keySet());
 		sorted.sort(runComparator);
-		HashSet<ICardSet> sets = new HashSet<ICardSet>();
+		ArrayList<ICardSet> sets = new ArrayList<ICardSet>();
 		for (int i=0; i<sorted.size(); i++){
 			for (int j=i+1; j<sorted.size(); j++){
 				if (runComparator.compare(sorted.get(j), sorted.get(j-1)) == 1){
 //					if (j-i > 1){
-						HashSet<Card> temp = new HashSet<Card>();
+						ArrayList<Card> temp = new ArrayList<Card>();
 						for (int k = i; k<j+1; k++){
 							temp.add(sorted.get(k));
 						}
@@ -231,6 +231,18 @@ public class Hand implements Iterable<Card>
 			}
 		}
 		return sets;
+	}
+	
+	private int heuristicScore(ICardSet s){
+		int score = 0;
+		for (Card c : s){
+			if (c.getRank().ordinal() >= MAX_POINT){
+				score += MAX_POINT;
+			}else{
+				score += c.getRank().ordinal()+1;
+			}
+		}
+		return score;
 	}
 	
 	private HashMap<HashSet<ICardSet>, Integer> recursiveAutoMatch(Stack<ICardSet> sets){
@@ -246,14 +258,7 @@ public class Hand implements Iterable<Card>
 			return withFirst;
 		}
 		// get the points
-		int score = 0;
-		for (Card c : first){
-			if (c.getRank().ordinal() >= MAX_POINT){
-				score += MAX_POINT;
-			}else{
-				score += c.getRank().ordinal()+1;
-			}
-		}
+		int score = heuristicScore(first);
 		
 		if (!withFirst.isEmpty()){ // check for each combination if we can put "first"
 			HashMap<HashSet<ICardSet>, Integer> temp = new HashMap<HashSet<ICardSet>, Integer>();
@@ -317,7 +322,62 @@ public class Hand implements Iterable<Card>
 		autoMatchCalled = true;
 	}
 	
+	private HashMap<Set<ICardSet>, Set<Card>> 
+		recursiveAutoMatchCS(Stack<ICardSet> pSets, Set<ICardSet> matchedSets, Set<Card> usedCards){
+		
+		// base case, if empty stack
+		if (pSets.isEmpty()){
+			Set<ICardSet> newMap = new HashSet<ICardSet>(matchedSets);
+			Set<Card> newWook = new HashSet<Card>(usedCards);
+			HashMap<Set<ICardSet>, Set<Card>> ans = new HashMap<Set<ICardSet>, Set<Card>>();
+			ans.put(newMap, newWook);
+		}
+		
+		ICardSet firstSet = pSets.pop();
+		HashMap<Set<ICardSet>, Set<Card>> prev = recursiveAutoMatchCS(pSets, matchedSets, usedCards);
+		for (Card c : firstSet){
+			usedCards.add(c);
+		}
+		
+		for (ICardSet s : matchedSets){
+			ICardSet newSet = s.add(firstSet);
+			if (newSet != null){
+				matchedSets.remove(s);
+				matchedSets.add(newSet);
+				prev.putAll(recursiveAutoMatchCS(pSets, matchedSets, usedCards));
+				matchedSets.add(s);
+				matchedSets.remove(newSet);
+			}
+		}
+		
+		return prev;
+	}
+	
 	public void automatchCardSet(Set<ICardSet> pSets){
+		Stack<ICardSet> sets = new Stack<ICardSet>();
+		sets.addAll(createRun());
+		sets.addAll(createGroups());
+		
+		HashMap<Set<ICardSet>, Set<Card>> allCombos = recursiveAutoMatchCS(sets, pSets, new HashSet<Card>());
+		// optimize score
+		int optScore = Integer.MAX_VALUE;
+		Set<ICardSet> optKey = null;
+		Set<ICardSet> optMatchedSet = null;
+		for (Set<ICardSet> s : allCombos.keySet()){
+			for (Card c : allCombos.get(s)){
+				remove(c);
+			}
+			autoMatch();
+			int score = score();
+			if (score < optScore){
+				optKey = s;
+				optScore = score;
+				optMatchedSet = getMatchedSets();
+			}
+			for (Card c : allCombos.get(s)){
+				add(c);
+			}
+		}
 		
 	}
 	

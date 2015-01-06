@@ -1,10 +1,11 @@
 package ca.mcgill.cs.comp303.rummy.model;
 
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 public class RunSet extends CardSet{
 	
-	public RunSet(Set<Card> pCards) {
+	public RunSet(List<Card> pCards) {
 		super(pCards);
 	}
 
@@ -16,5 +17,27 @@ public class RunSet extends CardSet{
 	@Override
 	public boolean isRun() {
 		return true;
+	}
+	
+	@Override
+	public ICardSet add(ICardSet pSet) {
+		if (pSet.isRun() && getFirst().getSuit().equals(pSet.getFirst().getSuit())){
+			if (getFirst().getRank().ordinal() - 1 == pSet.getLast().getRank().ordinal()){
+				ArrayList<Card> cards = new ArrayList<Card>();
+				for (Card c : pSet){
+					cards.add(c);
+				}
+				cards.addAll(aSet);
+				return new GroupSet(cards);
+			}
+			if (getLast().getRank().ordinal() + 1 == pSet.getFirst().getRank().ordinal()){
+				ArrayList<Card> cards = new ArrayList<Card>(aSet);
+				for (Card c : pSet){
+					cards.add(c);
+				}
+				return new GroupSet(cards);
+			}
+		}
+		return null;
 	}
 }
