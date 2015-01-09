@@ -353,7 +353,7 @@ public class Hand implements Iterable<Card>
 		return prev;
 	}
 	
-	public void automatchCardSet(Set<ICardSet> pSets){
+	public Set<ICardSet> automatchCardSet(Set<ICardSet> pSets){
 		Stack<ICardSet> sets = new Stack<ICardSet>();
 		sets.addAll(createRun());
 		sets.addAll(createGroups());
@@ -378,7 +378,11 @@ public class Hand implements Iterable<Card>
 				add(c);
 			}
 		}
-		
+		for (Card c : allCombos.get(optMatchedSet)){
+			remove(c);
+		}
+		autoMatch();
+		return optMatchedSet;
 	}
 	
 	/**

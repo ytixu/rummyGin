@@ -35,5 +35,10 @@ public class HumanPlayer extends AbstractPlayer{
 		
 	}
 
+	@Override
+	public boolean isRobot() {
+		return false;
+	}
+
 
 }

@@ -62,7 +62,12 @@ public abstract class AbstractPlayer implements Player{
 	 * @see gameEngine.Player#addDeadwook(java.util.Set)
 	 * Need to call gameEngine.layout(sets);
 	 */
-	public abstract void addDeadwook(Set<ICardSet> pSets);
+	public void addDeadwook(Set<ICardSet> pSets){
+		Set<ICardSet> newSet = aHand.automatchCardSet(pSets);
+		pSets.clear();
+		pSets.addAll(newSet);
+		aHasLayout = true;
+	}
 
 	@Override
 	public Set<ICardSet> getMatchedSets() {
@@ -120,4 +125,6 @@ public abstract class AbstractPlayer implements Player{
 	public boolean doneLayout(){
 		return aHasLayout;
 	}
+	
+	public abstract boolean isRobot();
 }

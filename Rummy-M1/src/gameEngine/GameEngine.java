@@ -40,12 +40,15 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 	private ArrayList<Integer> winners;
 	
 	public GameEngine(Player... pPlayers){
+		aObservers = new ArrayList<GameObserver>();
+		aDeck = new Deck();
+	}
+	
+	public void setPlayer(Player... pPlayers){
 		aPlayers = new Player[pPlayers.length];
 		for (int i=0; i<pPlayers.length; i++){
 			aPlayers[i] = pPlayers[i];
 		}
-		aObservers = new ArrayList<GameObserver>();
-		aDeck = new Deck();
 		distributeCards();
 		// set turn
 		int minCard = Integer.MAX_VALUE;
@@ -70,14 +73,13 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 	}
 	
 	public int nextTurn(){
-		return turn++ % aPlayers.length;
+		return (turn+1) % aPlayers.length;
 	}
 	
 	@Override
 	public Card drawFromDeck() {
 		lastMove = aPlayers[turn].toString() + " draws from deck.";
-		return aDeck.draw();
-		
+		return aDeck.draw();	
 	}
 
 	@Override
@@ -142,6 +144,16 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 			for (Player p: aPlayers){
 				p.addCard(aDeck.draw());
 			}
+		}
+	}
+	
+	public void playNextRound(){
+		turn = nextTurn();
+		while(aPlayers[turn].isRobot()){
+			aPlayers[turn].pickCard();
+			aPlayers[turn].discard();
+			aPlayers[turn].knock();
+			turn = nextTurn();
 		}
 	}
 	

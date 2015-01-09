@@ -94,4 +94,9 @@ public interface Player extends Iterable<Card>
 	 * New game. 
 	 */
 	void clear();
+	
+	/**
+	 * @return whether a player is a robot.
+	 */
+	boolean isRobot();
 }
