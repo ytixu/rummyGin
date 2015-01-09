@@ -399,5 +399,10 @@ public class Hand implements Iterable<Card>
 		return aCards.keySet().iterator();
 	}
 	
-	
+	/**
+	 * For printing
+	 */
+	public String toString(){
+		return aCards.keySet().toString();
+	}
 }

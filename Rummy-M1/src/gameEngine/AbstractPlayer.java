@@ -117,6 +117,11 @@ public abstract class AbstractPlayer implements Player{
 	}
 	
 	@Override
+	public String printHand(){
+		return aHand.toString();
+	}
+	
+	@Override
 	public int getHandScore(){
 		return aHand.score();
 	}

@@ -67,8 +67,7 @@ public class OptPlayer extends AbstractPlayer {
 
 	@Override
 	public boolean isRobot() {
-		// TODO Auto-generated method stub
-		return false;
+		return true;
 	}
 
 }

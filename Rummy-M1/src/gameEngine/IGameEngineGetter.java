@@ -16,9 +16,9 @@ public interface IGameEngineGetter {
 	
 	/**
 	 * Get all players.
-	 * @return a iterator of Player
+	 * @return a array of Player
 	 */
-	Iterator<Player> getPlayers();
+	Player[] getPlayers();
 	
 	/**
 	 * Get the lated move.

@@ -42,7 +42,7 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 	public GameEngine(Player... pPlayers){
 		aObservers = new ArrayList<GameObserver>();
 		aDeck = new Deck();
-	}
+	} 
 	
 	public void setPlayer(Player... pPlayers){
 		aPlayers = new Player[pPlayers.length];
@@ -61,8 +61,13 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 			}
 		}
 		winners = new ArrayList<Integer>();
-		lastMove = "New game.\n" + aPlayers.toString() + "\n" 
+		lastMove = "New game.\n" + Arrays.toString(aPlayers) + "\n" 
 				+ aPlayers[turn].toString() + " begins.";
+		notifyGameObserver();
+	}
+	
+	public void addObserver(GameObserver o){
+		aObservers.add(o);
 	}
 	
 	public void reset(){
@@ -70,6 +75,7 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 		lastMove = "New game.\n" + aPlayers.toString();
 		aMatchedSet = null;
 		winners.clear();
+		notifyGameObserver();
 	}
 	
 	public int nextTurn(){
@@ -79,12 +85,14 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 	@Override
 	public Card drawFromDeck() {
 		lastMove = aPlayers[turn].toString() + " draws from deck.";
+		notifyGameObserver();
 		return aDeck.draw();	
 	}
 
 	@Override
 	public Card takeDiscard() {
 		lastMove = aPlayers[turn].toString() + " takes the discarded card.";
+		notifyGameObserver();
 		return aDiscard;
 	}
 
@@ -92,6 +100,7 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 	public void discard(Card pCard) {
 		aDiscard = pCard;
 		lastMove = aPlayers[turn].toString() + " discards " + pCard.toString() + ".";
+		notifyGameObserver();
 	}
 
 	@Override
@@ -99,7 +108,7 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 		knocker = turn;
 		lastMove = aPlayers[turn] + " knocks.\n" + aPlayers[turn].getMatchedSets().toString() + 
 					"\nUnmatched cards:" + aPlayers[turn].getDeadwook();
-		
+		notifyGameObserver();
 		aPlayers[nextTurn()].addDeadwook(aPlayers[turn].getMatchedSets());
 	}
 
@@ -107,6 +116,7 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 	public void layout(Set<ICardSet> aSets) {
 		lastMove = aPlayers[turn] + "'s matched set:\n" + aPlayers[turn].getMatchedSets().toString()
 				+ "'s rest:" + aPlayers[turn].getDeadwook();
+		notifyGameObserver();
 		turn = nextTurn();
 		if (aPlayers[nextTurn()].doneLayout()){
 			lastMove += "\nFinal matched set\n" + aSets.toString();
@@ -135,8 +145,8 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 	}
 
 	@Override
-	public Iterator<Player> getPlayers() {
-		return Arrays.asList(aPlayers).iterator();
+	public Player[] getPlayers() {
+		return aPlayers;
 	}
 	
 	public void distributeCards(){
@@ -148,8 +158,9 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 	}
 	
 	public void playNextRound(){
+		int currTurn = turn;
 		turn = nextTurn();
-		while(aPlayers[turn].isRobot()){
+		while(aPlayers[turn].isRobot() && turn != currTurn){
 			aPlayers[turn].pickCard();
 			aPlayers[turn].discard();
 			aPlayers[turn].knock();

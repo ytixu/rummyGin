@@ -15,6 +15,12 @@ public interface Player extends Iterable<Card>
 	void addCard(Card pCard);
 	
 	/**
+	 * For printing the cards in hand.
+	 * @return the string with all the cards
+	 */
+	String printHand();
+	
+	/**
 	 * Take a card.
 	 */
 	void pickCard();
