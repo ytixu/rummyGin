@@ -13,8 +13,8 @@ public abstract class AbstractPlayer implements Player{
 	protected Card newCard;
 	
 	private String aName;
-	private int aScore;
-	private int accumulatedScore;
+	private int aScore; // score in this hand
+	private int accumulatedScore; // total score in many hands
 	private int gameWon;
 	private boolean aHasLayout;
 	
