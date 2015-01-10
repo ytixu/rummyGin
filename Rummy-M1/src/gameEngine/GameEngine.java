@@ -2,8 +2,6 @@ package gameEngine;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Set;
 
 import ca.mcgill.cs.comp303.rummy.model.Card;
@@ -84,14 +82,16 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 	
 	@Override
 	public Card drawFromDeck() {
-		lastMove = aPlayers[turn].toString() + " draws from deck.";
+		Card drawn = aDeck.draw();
+		lastMove = aPlayers[turn].toString() + " draws from deck " + drawn.toString() + ".";
 		notifyGameObserver();
-		return aDeck.draw();	
+		return drawn;
 	}
 
 	@Override
 	public Card takeDiscard() {
-		lastMove = aPlayers[turn].toString() + " takes the discarded card.";
+		lastMove = aPlayers[turn].toString() + " takes the discarded card " 
+					+ aDiscard.toString() + ".";
 		notifyGameObserver();
 		return aDiscard;
 	}
@@ -155,12 +155,11 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 				p.addCard(aDeck.draw());
 			}
 		}
+		aDiscard = aDeck.draw();
 	}
 	
 	public void playNextRound(){
-		int currTurn = turn;
-		turn = nextTurn();
-		while(aPlayers[turn].isRobot() && turn != currTurn){
+		for(int i=0; aPlayers[turn].isRobot() && i < aPlayers.length; i++){
 			aPlayers[turn].pickCard();
 			aPlayers[turn].discard();
 			aPlayers[turn].knock();

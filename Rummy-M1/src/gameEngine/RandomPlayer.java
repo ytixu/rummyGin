@@ -20,7 +20,7 @@ public class RandomPlayer extends AbstractPlayer {
 		if (rnd.nextBoolean()){
 			newCard = gameEngine.drawFromDeck();
 		}else{
-			newCard = gameEngine.peekDiscard();
+			newCard = gameEngine.takeDiscard();
 		}
 	}
 

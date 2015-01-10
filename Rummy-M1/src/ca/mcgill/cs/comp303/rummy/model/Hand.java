@@ -390,6 +390,7 @@ public class Hand implements Iterable<Card>
 	 * @return true if less or equal to 10
 	 */
 	public boolean canKnock(){
+		if (!autoMatchCalled) autoMatch();
 		if (score() <= MAXSCORE) return true;
 		return false;
 	}
