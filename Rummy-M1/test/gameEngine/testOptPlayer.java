@@ -26,6 +26,7 @@ public class testOptPlayer {
 		h.add(new Card(Rank.NINE, Suit.SPADES));
 		h.add(new Card(Rank.TWO, Suit.CLUBS));
 		h.autoMatch();
+		System.out.println(h.getMatchedSets().toString() + h.score());
 		assertEquals(h.score(), 11);
 		h.remove(new Card(Rank.TWO, Suit.CLUBS));
 		h.add(new Card(Rank.NINE, Suit.DIAMONDS));

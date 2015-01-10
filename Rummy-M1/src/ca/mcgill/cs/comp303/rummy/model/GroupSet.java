@@ -21,7 +21,7 @@ public class GroupSet extends CardSet{
 
 	@Override
 	public ICardSet add(ICardSet pSet) {
-		if (pSet.isGroup() && getFirst().getRank() != pSet.getFirst().getRank()){
+		if (pSet.isGroup() && getFirst().getRank() == pSet.getFirst().getRank()){
 				
 			ArrayList<Card> cards = new ArrayList<Card>(aSet);
 			for (Card c : pSet){

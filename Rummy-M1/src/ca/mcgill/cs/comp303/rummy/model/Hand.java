@@ -223,7 +223,7 @@ public class Hand implements Iterable<Card>
 		Comparator<Card> runComparator = new Comparator<Card>(){
 			@Override
 			public int compare(Card arg0, Card arg1) {
-				return arg0.compareTo(arg1);
+				return arg0.compareTo(arg1) + arg0.getSuit().compareTo(arg1.getSuit());
 			}
 		};
 		ArrayList<Card> sorted = new ArrayList<Card>(aCards.keySet());
@@ -345,6 +345,7 @@ public class Hand implements Iterable<Card>
 			Set<Card> newWook = new HashSet<Card>(usedCards);
 			HashMap<Set<ICardSet>, Set<Card>> ans = new HashMap<Set<ICardSet>, Set<Card>>();
 			ans.put(newMap, newWook);
+			return ans;
 		}
 		
 		ICardSet firstSet = pSets.pop();
@@ -353,7 +354,8 @@ public class Hand implements Iterable<Card>
 			usedCards.add(c);
 		}
 		
-		for (ICardSet s : matchedSets){
+		Set<ICardSet> copy = new HashSet<ICardSet>(matchedSets);
+		for (ICardSet s : copy){
 			ICardSet newSet = s.add(firstSet);
 			if (newSet != null){
 				matchedSets.remove(s);
@@ -371,8 +373,13 @@ public class Hand implements Iterable<Card>
 		Stack<ICardSet> sets = new Stack<ICardSet>();
 		sets.addAll(createRun());
 		sets.addAll(createGroups());
+		for (Card c: aCards.keySet()){
+			sets.push(new SignletonCardSet(c));
+		}
+		System.out.println(sets.toString());
 		
 		HashMap<Set<ICardSet>, Set<Card>> allCombos = recursiveAutoMatchCS(sets, pSets, new HashSet<Card>());
+		System.out.println(allCombos.toString());
 		// optimize score
 		int optScore = Integer.MAX_VALUE;
 		Set<ICardSet> optKey = null;
