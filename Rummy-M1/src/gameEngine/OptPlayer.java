@@ -43,8 +43,10 @@ public class OptPlayer extends AbstractPlayer {
 			}
 		}
 		if (optDiscard != null){
-			aHand.remove(optDiscard);
-			aHand.add(preRemoved);
+			if (!optDiscard.equals(preRemoved)){
+				aHand.remove(optDiscard);
+				aHand.add(preRemoved);
+			}
 			return optDiscard;
 		}
 		aHand.remove(toAdd);

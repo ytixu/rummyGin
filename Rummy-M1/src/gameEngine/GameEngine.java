@@ -40,6 +40,7 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 	public GameEngine(Player... pPlayers){
 		aObservers = new ArrayList<GameObserver>();
 		aDeck = new Deck();
+		knocker = -1;
 	} 
 	
 	public void setPlayer(Player... pPlayers){
@@ -73,6 +74,7 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 		lastMove = "New game.\n" + aPlayers.toString();
 		aMatchedSet = null;
 		winners.clear();
+		knocker = -1;
 		notifyGameObserver();
 	}
 	
@@ -159,7 +161,11 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 	}
 	
 	public void playNextRound(){
-		for(int i=0; aPlayers[turn].isRobot() && i < aPlayers.length; i++){
+		while (aPlayers[turn].isRobot()){
+			if ( aDeck.isEmpty() || knocker != -1){
+				endGame();
+				return;
+			}
 			aPlayers[turn].pickCard();
 			aPlayers[turn].discard();
 			aPlayers[turn].knock();
@@ -216,10 +222,12 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 			}
 		}
 		lastMove = "END GAME\n";
+		if (aDeck.isEmpty()) lastMove += "No more cards in deck.\n";
 		for (Player p: aPlayers){
 			p.clear();
 			lastMove += p.toString() + ": " + p.getTotalScore() + "\n";
-		}
+		}  
+		notifyGameObserver();
 	}
 	
 	public void saveGame(){
