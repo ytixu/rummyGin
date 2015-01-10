@@ -65,11 +65,4 @@ public class Deck
 	{
 		return aCards.size();
 	}
-	
-	/**
-	 * @return whether the deck is empty.
-	 */
-	public boolean isEmpty(){
-		return aCards.isEmpty();
-	}
 }

@@ -35,6 +35,32 @@ public class testOptPlayer {
 	}
 	
 	@Test
+	public void testAutoMatchSets(){
+		Hand h = new Hand();
+		h.add(new Card(Rank.ACE, Suit.CLUBS));
+		h.add(new Card(Rank.ACE, Suit.SPADES));
+		h.add(new Card(Rank.ACE, Suit.DIAMONDS));
+		h.add(new Card(Rank.NINE, Suit.CLUBS));
+		h.add(new Card(Rank.TEN, Suit.CLUBS));
+		h.add(new Card(Rank.JACK, Suit.CLUBS));
+		h.add(new Card(Rank.QUEEN, Suit.CLUBS));
+		h.add(new Card(Rank.KING, Suit.CLUBS));
+		h.add(new Card(Rank.NINE, Suit.SPADES));
+		h.add(new Card(Rank.TWO, Suit.CLUBS));
+		h.autoMatch();
+		Hand hh = new Hand();
+		hh.add(new Card(Rank.ACE, Suit.HEARTS));
+		hh.add(new Card(Rank.THREE, Suit.HEARTS));
+		hh.add(new Card(Rank.FIVE, Suit.HEARTS));
+		hh.add(new Card(Rank.FOUR, Suit.HEARTS));
+		hh.add(new Card(Rank.NINE, Suit.HEARTS));
+		hh.add(new Card(Rank.EIGHT, Suit.CLUBS));
+		hh.automatchCardSet(h.getMatchedSets());
+		assertEquals(hh.score(), 9);
+		System.out.println("---" + hh.getMatchedSets().toString());
+	}
+	
+	@Test
 	public void testPlayer(){
 		Player p = new OptPlayer(ge);
 		p.addCard(new Card(Rank.ACE, Suit.CLUBS));

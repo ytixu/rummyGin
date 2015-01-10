@@ -337,33 +337,32 @@ public class Hand implements Iterable<Card>
 	}
 	
 	private HashMap<Set<ICardSet>, Set<Card>> 
-		recursiveAutoMatchCS(Stack<ICardSet> pSets, Set<ICardSet> matchedSets, Set<Card> usedCards){
-		
+		recursiveAutoMatchCS(Stack<ICardSet> pSets, Set<ICardSet> matchedSets){
 		// base case, if empty stack
 		if (pSets.isEmpty()){
 			Set<ICardSet> newMap = new HashSet<ICardSet>(matchedSets);
-			Set<Card> newWook = new HashSet<Card>(usedCards);
+			Set<Card> newWook = new HashSet<Card>();
 			HashMap<Set<ICardSet>, Set<Card>> ans = new HashMap<Set<ICardSet>, Set<Card>>();
 			ans.put(newMap, newWook);
 			return ans;
 		}
-		
 		ICardSet firstSet = pSets.pop();
-		HashMap<Set<ICardSet>, Set<Card>> prev = recursiveAutoMatchCS(pSets, matchedSets, usedCards);
-		Set<Card> newUsedCards = new HashSet<Card>(usedCards);
-		for (Card c : firstSet){
-			newUsedCards.add(c);
-		}
-		
-		Set<ICardSet> copy = new HashSet<ICardSet>(matchedSets);
-		for (ICardSet s : copy){
-			ICardSet newSet = s.add(firstSet);
-			if (newSet != null){
-				matchedSets.remove(s);
-				matchedSets.add(newSet);
-				prev.putAll(recursiveAutoMatchCS(pSets, matchedSets, newUsedCards));
-				matchedSets.add(s);
-				matchedSets.remove(newSet);
+		HashMap<Set<ICardSet>, Set<Card>> prev = recursiveAutoMatchCS(pSets, matchedSets);
+				
+		Set<Set<ICardSet>> copy = new HashSet<Set<ICardSet>>(prev.keySet());
+		for (Set<ICardSet> sc: copy){
+			for (ICardSet s : sc){
+				ICardSet newSet = s.add(firstSet);
+				if (newSet != null){
+					Set<Card> newUsedCards = new HashSet<Card>(prev.get(sc));
+					for (Card c : firstSet){
+						newUsedCards.add(c);
+					}
+					Set<ICardSet> newMatchedSet = new HashSet<ICardSet>(sc);
+					newMatchedSet.remove(s);
+					newMatchedSet.add(newSet);
+					prev.put(newMatchedSet, newUsedCards);
+				}
 			}
 		}
 		
@@ -379,7 +378,7 @@ public class Hand implements Iterable<Card>
 		}
 		System.out.println(sets.toString());
 		
-		HashMap<Set<ICardSet>, Set<Card>> allCombos = recursiveAutoMatchCS(sets, pSets, new HashSet<Card>());
+		HashMap<Set<ICardSet>, Set<Card>> allCombos = recursiveAutoMatchCS(sets, pSets);
 		System.out.println(allCombos.toString());
 		// optimize score
 		int optScore = Integer.MAX_VALUE;

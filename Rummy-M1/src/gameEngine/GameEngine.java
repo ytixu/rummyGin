@@ -111,16 +111,22 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 		lastMove = aPlayers[turn] + " knocks.\n" + aPlayers[turn].getMatchedSets().toString() + 
 					"\nUnmatched cards:" + aPlayers[turn].getDeadwook();
 		notifyGameObserver();
-		aPlayers[nextTurn()].addDeadwook(aPlayers[turn].getMatchedSets());
+		turn = nextTurn();
+		aPlayers[turn].addDeadwook(aPlayers[knocker].getMatchedSets());
 	}
 
 	@Override
 	public void layout(Set<ICardSet> aSets) {
-		lastMove = aPlayers[turn] + "'s matched set:\n" + aPlayers[turn].getMatchedSets().toString()
-				+ "'s rest:" + aPlayers[turn].getDeadwook();
+		String match = null;
+		if (aPlayers[turn].getMatchedSets() != null){
+			match = aPlayers[turn].getMatchedSets().toString();
+		}
+		lastMove = "New Layout\n" + aSets.toString() + "\n" + 
+				aPlayers[turn].toString() + "'s matched set:\n" + match
+				+ "\nand rest:" + aPlayers[turn].getDeadwook();
 		notifyGameObserver();
 		turn = nextTurn();
-		if (aPlayers[nextTurn()].doneLayout()){
+		if (aPlayers[turn].doneLayout()){
 			lastMove += "\nFinal matched set\n" + aSets.toString();
 			aMatchedSet = aSets;
 			setPoints();
@@ -162,7 +168,7 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 	
 	public void playNextRound(){
 		while (aPlayers[turn].isRobot()){
-			if ( aDeck.isEmpty() || knocker != -1){
+			if ( aDeck.size() < 2|| knocker != -1){
 				endGame();
 				return;
 			}
@@ -174,11 +180,12 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 	}
 	
 	private void setPoints(){
-		int minScore = Integer.MAX_VALUE;
+		int maxScore = Integer.MIN_VALUE;
 		int knockerScore = aPlayers[knocker].getHandScore();
 		for (Player p: aPlayers){
-			if (minScore > p.getHandScore()){
-				minScore = p.getHandScore();
+			System.out.println(p.toString() + " " + p.getHandScore());
+			if (maxScore < p.getHandScore()){
+				maxScore = p.getHandScore();
 			}
 		}
 		for (int i = 0; i<aPlayers.length; i++){
@@ -193,11 +200,11 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 			}else{
 				temp = aPlayers[i].getHandScore();
 				// check undercut 
-				if (temp > knockerScore){
+				if (temp < knockerScore){
 					aPlayers[i].updateScore(POINTS.UNDERCUT.bonus);
 				}
 			}
-			aPlayers[i].updateScore(temp - minScore);
+			aPlayers[i].updateScore(maxScore - temp);
 			// check more than 100 points
 			if (aPlayers[i].getScore() > POINTS.ENDGAME.bonus){
 				aPlayers[i].updateScore(POINTS.ENDGAME.bonus);
@@ -222,7 +229,12 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 			}
 		}
 		lastMove = "END GAME\n";
-		if (aDeck.isEmpty()) lastMove += "No more cards in deck.\n";
+		if (aDeck.size() < 2){
+			lastMove += "No more cards in deck.\n";
+			for (Player p: aPlayers){
+				lastMove += p.toString() + " : " + p.handToString() + "\n";
+			}
+		}
 		for (Player p: aPlayers){
 			p.clear();
 			lastMove += p.toString() + ": " + p.getTotalScore() + "\n";
