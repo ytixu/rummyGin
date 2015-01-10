@@ -91,10 +91,23 @@ public class Hand implements Iterable<Card>
 	 */
 	public void reset(){
 		if (autoMatchCalled == false) return;
+		autoMatchCalled = false;
 		for (Card c : this){
 			aCards.put(c, false);
 		}
 		aMatchSet = null;
+	}
+	
+	/**
+	 * Check if a card in the hand is matched.
+	 * @param pCard
+	 * @return whether the specified card is matched. 
+	 */
+	public boolean cardIsMatched(Card pCard){
+		if (contains(pCard)){
+			return aCards.get(pCard);
+		}
+		return false;
 	}
 	
 	/**
@@ -147,6 +160,7 @@ public class Hand implements Iterable<Card>
 	 */
 	public int score()
 	{
+		if (!autoMatchCalled) autoMatch();
 		int score = 0;
 		for (Map.Entry pair : aCards.entrySet()){
 			if (! (Boolean) pair.getValue()){

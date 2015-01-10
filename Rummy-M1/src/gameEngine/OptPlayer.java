@@ -26,8 +26,10 @@ public class OptPlayer extends AbstractPlayer {
 	private Card maximize(Card toAdd, int minScore){
 		Card optDiscard = null;
 		Card preRemoved = null;
+//		System.out.println(minScore);
 		Set<Card> s = copyHand();
 		for (Card c: s){
+//			System.out.println("Remove " + c.toString());
 			aHand.remove(c);
 			if (preRemoved == null){
 				aHand.add(toAdd);
@@ -35,11 +37,14 @@ public class OptPlayer extends AbstractPlayer {
 				aHand.add(preRemoved);
 			}
 			preRemoved = c;
+//			System.out.println(aHand.toString());
 			aHand.autoMatch();
 			int score = getHandScore();
+//			System.out.println(score + " vs " + minScore);
 			if (minScore > score){
 				minScore = score;
 				optDiscard = c;
+//				System.out.println("GOOD");
 			}
 		}
 		if (optDiscard != null){
@@ -59,14 +64,18 @@ public class OptPlayer extends AbstractPlayer {
 		aHand.autoMatch();
 		int score = getHandScore();
 		Card toDiscard = maximize(gameEngine.peekDiscard(), score);
-		if (toDiscard != null){
+		if (aHand.cardIsMatched(gameEngine.peekDiscard())){
 			gameEngine.takeDiscard();
 			newCard = toDiscard;
-		}else{
-			newCard = gameEngine.drawFromDeck();
-			toDiscard = maximize(newCard, score);
-			if (toDiscard != null) newCard = toDiscard;
-		}	
+			return;
+		}
+		if (toDiscard != null){
+			aHand.remove(gameEngine.peekDiscard());
+			aHand.add(toDiscard);
+		}
+		newCard = gameEngine.drawFromDeck();
+		toDiscard = maximize(newCard, score);
+		if (toDiscard != null) newCard = toDiscard;
 	}
 
 	@Override

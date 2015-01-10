@@ -63,17 +63,17 @@ public class TestAutoMatch
 		assertNull(aHand.getMatchedSets());
 	}
 	
-	@Test
-	public void testReset(){
-		Card c = new Card(Rank.EIGHT, Suit.DIAMONDS);
-		aHand.autoMatch();
-		aHand.remove(c);
-		assertNull(aHand.getMatchedSets());
-		aHand.autoMatch();
-		assertNull(aHand.getMatchedSets());
-		aHand.add(c);
-		assertNull(aHand.getMatchedSets());
-	}
+//	@Test
+//	public void testReset(){
+//		Card c = new Card(Rank.EIGHT, Suit.DIAMONDS);
+//		aHand.autoMatch();
+//		aHand.remove(c);
+//		assertNull(aHand.getMatchedSets());
+//		aHand.autoMatch();
+//		assertNull(aHand.getMatchedSets());
+//		aHand.add(c);
+//		assertNull(aHand.getMatchedSets());
+//	}
 	
 	/*
 	* From mycourses
