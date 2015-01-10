@@ -28,14 +28,14 @@ public class RunSet extends CardSet{
 					cards.add(c);
 				}
 				cards.addAll(aSet);
-				return new GroupSet(cards);
+				return new RunSet(cards);
 			}
 			if (getLast().getRank().ordinal() + 1 == pSet.getFirst().getRank().ordinal()){
 				ArrayList<Card> cards = new ArrayList<Card>(aSet);
 				for (Card c : pSet){
 					cards.add(c);
 				}
-				return new GroupSet(cards);
+				return new RunSet(cards);
 			}
 		}
 		return null;

@@ -40,10 +40,11 @@ public class RandomPlayer extends AbstractPlayer {
 	}
 
 	@Override
-	public void knock() {
+	public boolean knockStrategy() {
 		if (aHand.canKnock() && rnd.nextBoolean()){
-			gameEngine.knock();
+			return true;
 		}
+		return false;
 	}
 
 	@Override

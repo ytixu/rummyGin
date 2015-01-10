@@ -24,12 +24,6 @@ public class HumanPlayer extends AbstractPlayer{
 	}
 
 	@Override
-	public void knock() {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
 	public void addDeadwook(Set<ICardSet> pSets) {
 		// TODO Auto-generated method stub
 		
@@ -37,6 +31,12 @@ public class HumanPlayer extends AbstractPlayer{
 
 	@Override
 	public boolean isRobot() {
+		return false;
+	}
+
+	@Override
+	public boolean knockStrategy() {
+		// TODO Auto-generated method stub
 		return false;
 	}
 

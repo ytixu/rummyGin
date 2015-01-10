@@ -350,8 +350,9 @@ public class Hand implements Iterable<Card>
 		
 		ICardSet firstSet = pSets.pop();
 		HashMap<Set<ICardSet>, Set<Card>> prev = recursiveAutoMatchCS(pSets, matchedSets, usedCards);
+		Set<Card> newUsedCards = new HashSet<Card>(usedCards);
 		for (Card c : firstSet){
-			usedCards.add(c);
+			newUsedCards.add(c);
 		}
 		
 		Set<ICardSet> copy = new HashSet<ICardSet>(matchedSets);
@@ -360,7 +361,7 @@ public class Hand implements Iterable<Card>
 			if (newSet != null){
 				matchedSets.remove(s);
 				matchedSets.add(newSet);
-				prev.putAll(recursiveAutoMatchCS(pSets, matchedSets, usedCards));
+				prev.putAll(recursiveAutoMatchCS(pSets, matchedSets, newUsedCards));
 				matchedSets.add(s);
 				matchedSets.remove(newSet);
 			}
@@ -383,27 +384,25 @@ public class Hand implements Iterable<Card>
 		// optimize score
 		int optScore = Integer.MAX_VALUE;
 		Set<ICardSet> optKey = null;
-		Set<ICardSet> optMatchedSet = null;
 		for (Set<ICardSet> s : allCombos.keySet()){
 			for (Card c : allCombos.get(s)){
 				remove(c);
 			}
 			autoMatch();
 			int score = score();
-			if (score < optScore){
+			if (score < optScore || optKey == null){
 				optKey = s;
 				optScore = score;
-				optMatchedSet = getMatchedSets();
 			}
 			for (Card c : allCombos.get(s)){
 				add(c);
 			}
 		}
-		for (Card c : allCombos.get(optMatchedSet)){
+		for (Card c : allCombos.get(optKey)){
 			remove(c);
 		}
 		autoMatch();
-		return optMatchedSet;
+		return optKey;
 	}
 	
 	/**

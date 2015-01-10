@@ -84,10 +84,11 @@ public class OptPlayer extends AbstractPlayer {
 	}
 
 	@Override
-	public void knock() {
+	public boolean knockStrategy() {
 		if (getHandScore() < 5){
-			gameEngine.knock();
+			return true;
 		}
+		return false;
 	}
 
 	@Override

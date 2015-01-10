@@ -13,7 +13,8 @@ public abstract class CardSet implements ICardSet
 	protected ArrayList<Card> aSet;
 	
 	public CardSet(List<Card> pCards){
-		aSet = new ArrayList<Card>(pCards);
+		if (pCards == null) aSet = new ArrayList<Card>();
+		else aSet = new ArrayList<Card>(pCards);
 	}
 	
 	@Override

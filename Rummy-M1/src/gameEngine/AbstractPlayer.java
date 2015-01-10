@@ -54,7 +54,18 @@ public abstract class AbstractPlayer implements Player{
 	 * @see gameEngine.Player#knock()
 	 * Need to call gameEngine.knock() and handle bad knocking (score greater than 10)
 	 */
-	public abstract void knock();
+	public void knock(){
+		if (knockStrategy()){
+			aHasLayout = true;
+			gameEngine.knock();
+		}
+	}
+	
+	/**
+	 * The knocking strategy to implement.
+	 * @return If can knock then return true.
+	 */
+	public abstract boolean knockStrategy();
 	
 	@Override
 	/*
@@ -64,9 +75,10 @@ public abstract class AbstractPlayer implements Player{
 	 */
 	public void addDeadwook(Set<ICardSet> pSets){
 		Set<ICardSet> newSet = aHand.automatchCardSet(pSets);
-		pSets.clear();
-		pSets.addAll(newSet);
+//		pSets.clear();
+//		pSets.addAll(newSet);
 		aHasLayout = true;
+		gameEngine.layout(pSets);
 	}
 
 	@Override
