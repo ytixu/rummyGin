@@ -29,7 +29,7 @@ public class GinRummy extends JFrame{
 	private static final int WIDTH = 400;
 	private static final int HEIGHT = 300;
 	
-	private GameEngine ge = new GameEngine();
+	private GameGUI ge = new GameGUI(MARGIN);
 	private final Menu menu = new Menu(MARGIN);
 	
 	public GinRummy(){
@@ -39,26 +39,32 @@ public class GinRummy extends JFrame{
 		Border padding = BorderFactory.createEmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN);
 		contentPanel.setBorder(padding);
 		setContentPane(contentPanel);
-		setLayout(new BorderLayout(MARGIN, MARGIN));
+//		setLayout(new BorderLayout(MARGIN, MARGIN));
 		showMenu();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		pack();
-		setVisible(true);
-		//
 		menu.setStartBtn(new ActionListener(){
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				Set<Player> p = menu.getOptions(ge);
 				ge.setPlayer(p);
+				gameStart();
+				System.out.println("Starting game");
 			}
-			
 		});
+		pack();
+		setVisible(true);
 	}
 	
 	private void showMenu(){
-		add(new JLabel("Configure Players", SwingConstants.CENTER), BorderLayout.NORTH);
 		add(menu, BorderLayout.CENTER);
+	}
+	
+	private void gameStart(){
+		remove(menu);
+		ge.show(this);
+		revalidate();
+		repaint();
 	}
 	
 	public static void main(String[] args){

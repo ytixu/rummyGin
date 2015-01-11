@@ -91,6 +91,10 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 		return (turn+1) % aPlayers.length;
 	}
 	
+	protected int getTrun(){
+		return turn;
+	}
+	
 	@Override
 	public Card drawFromDeck() {
 		Card drawn = aDeck.draw();

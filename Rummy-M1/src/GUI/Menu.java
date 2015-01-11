@@ -7,6 +7,7 @@ import gameEngine.Player;
 import gameEngine.RandomPlayer;
 
 import java.awt.BorderLayout;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.GridLayout;
@@ -23,6 +24,7 @@ import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 public class Menu extends JPanel{
@@ -33,11 +35,15 @@ public class Menu extends JPanel{
 	private int numberOfPlayers = 0;
 //	private HashMap<Integer, String> options = null;
 	private JPanel grid; 
+	private JPanel buttons;
 	private HashMap<JComboBox, JTextField> options = new HashMap<JComboBox, JTextField>();
 	
 	public Menu(int margin){
 		super();
-		setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
+		setLayout(new BoxLayout(this, BoxLayout.Y_AXIS));
+		JLabel text = new JLabel("Configure Players");
+		text.setAlignmentX(Component.CENTER_ALIGNMENT);
+		add(text);
 		grid = new JPanel();
 		grid.setLayout(new GridLayout(0,2,margin,0));
 		grid.add(new JLabel("Player type"));
@@ -45,6 +51,9 @@ public class Menu extends JPanel{
 		appendPlayer();
 		appendPlayer();
 		add(grid);
+		buttons = new JPanel();
+		buttons.setLayout(new FlowLayout());
+		add(buttons);
 	}
 	
 	private void appendPlayer(){
@@ -62,14 +71,11 @@ public class Menu extends JPanel{
 	}
 	
 	public void setStartBtn(ActionListener actlst){
-		JPanel buttons = new JPanel();
-		buttons.setLayout(new FlowLayout());
 		JButton aButton = new JButton("Start");
 		aButton.addActionListener(actlst);
 		buttons.add(aButton);
 		JButton bButton = new JButton("Add another player");
 		buttons.add(bButton);
-		add(buttons);
 	}
 	
 	private Player getPlayer(String type, String name, GameEngine ge){
