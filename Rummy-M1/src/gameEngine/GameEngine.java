@@ -48,6 +48,15 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 		for (int i=0; i<pPlayers.length; i++){
 			aPlayers[i] = pPlayers[i];
 		}
+		start();
+	}
+	
+	public void setPlayer(Set<Player> pPlayers){
+		aPlayers = pPlayers.toArray(new Player[pPlayers.size()]);
+		start();
+	}
+	
+	private void start(){
 		distributeCards();
 		// set turn
 		int minCard = Integer.MAX_VALUE;

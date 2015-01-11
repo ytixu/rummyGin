@@ -115,8 +115,8 @@ public class Hand implements Iterable<Card>
 	 */
 	public Set<ICardSet> getMatchedSets()
 	{
-		if (autoMatchCalled)return aMatchSet;
-		return null;
+		if (!autoMatchCalled) autoMatch();
+		return aMatchSet;
 	}
 	
 	/**
@@ -124,7 +124,7 @@ public class Hand implements Iterable<Card>
 	 */
 	public Set<Card> getUnmatchedCards()
 	{
-		if (!autoMatchCalled) return null;
+		if (!autoMatchCalled) autoMatch();
 		HashSet<Card> cards = new HashSet<Card>(aCards.keySet());
 		for (Card c : this){
 			if (aCards.get(c)){
@@ -326,13 +326,14 @@ public class Hand implements Iterable<Card>
 				optimal = (HashSet<ICardSet>) pair.getKey();
 			}
 		}
-		if (optimal == null) return;
-		for (ICardSet s : optimal){
-			for (Card c : s){
-				aCards.put(c, true);
+		if (optimal != null){
+			for (ICardSet s : optimal){
+				for (Card c : s){
+					aCards.put(c, true);
+				}
 			}
+			aMatchSet = optimal;
 		}
-		aMatchSet = optimal;
 		autoMatchCalled = true;
 	}
 	
