@@ -33,7 +33,7 @@ public class GinRummy extends JFrame{
 	private final Menu menu = new Menu(MARGIN);
 	
 	public GinRummy(){
-		super();
+		super("Gin Rummy");
 //		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		JPanel contentPanel = new JPanel();
 		Border padding = BorderFactory.createEmptyBorder(MARGIN, MARGIN, MARGIN, MARGIN);
@@ -63,6 +63,8 @@ public class GinRummy extends JFrame{
 	private void gameStart(){
 		remove(menu);
 		ge.show(this);
+		setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		setMinimumSize(getPreferredSize());
 		revalidate();
 		repaint();
 	}
