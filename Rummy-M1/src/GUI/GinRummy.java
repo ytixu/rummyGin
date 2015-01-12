@@ -26,10 +26,10 @@ import javax.swing.border.EmptyBorder;
 
 public class GinRummy extends JFrame{
 	private static final int MARGIN = 10;
-	private static final int WIDTH = 400;
-	private static final int HEIGHT = 300;
+	private static final int WIDTH = 1000;
+	private static final int HEIGHT = 800;
 	
-	private GameGUI ge = new GameGUI(MARGIN);
+	public static final GameGUI ge = new GameGUI(MARGIN);
 	private final Menu menu = new Menu(MARGIN);
 	
 	public GinRummy(){
@@ -42,6 +42,7 @@ public class GinRummy extends JFrame{
 //		setLayout(new BorderLayout(MARGIN, MARGIN));
 		showMenu();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setLocationRelativeTo(null);
 		menu.setStartBtn(new ActionListener(){
 
 			@Override
@@ -49,7 +50,6 @@ public class GinRummy extends JFrame{
 				Set<Player> p = menu.getOptions(ge);
 				ge.setPlayer(p);
 				gameStart();
-				System.out.println("Starting game");
 			}
 		});
 		pack();

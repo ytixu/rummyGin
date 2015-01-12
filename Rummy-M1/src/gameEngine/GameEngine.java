@@ -91,7 +91,7 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 		return (turn+1) % aPlayers.length;
 	}
 	
-	protected int getTrun(){
+	protected int getTurn(){
 		return turn;
 	}
 	
@@ -190,6 +190,8 @@ public class GameEngine implements IGameEngineGetter, IGameEngineSetter {
 			aPlayers[turn].knock();
 			turn = nextTurn();
 		}
+		lastMove = aPlayers[turn].toString() + " plays.";
+		notifyGameObserver();
 	}
 	
 	private void setPoints(){

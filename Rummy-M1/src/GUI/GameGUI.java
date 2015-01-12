@@ -1,6 +1,7 @@
 package GUI;
 
 import gameEngine.CardButton;
+import gameEngine.CommandLineObs;
 import gameEngine.GameEngine;
 import gameEngine.Player;
 
@@ -12,9 +13,11 @@ import java.awt.FlowLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -23,6 +26,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import ca.mcgill.cs.comp303.rummy.gui.swing.CardImages;
+import ca.mcgill.cs.comp303.rummy.model.Card;
+import ca.mcgill.cs.comp303.rummy.model.Hand;
 
 public class GameGUI extends GameEngine {
 	
@@ -35,6 +40,8 @@ public class GameGUI extends GameEngine {
 	private JButton aKnockBtn;
 	private JButton aDiscardBtn;
 	private JButton aDoneBtn;
+	
+	private Set<Card> selectedCards = new HashSet<Card>();
 
 	public GameGUI(int margin){
 		super();
@@ -50,7 +57,7 @@ public class GameGUI extends GameEngine {
 		playerTurn.setLayout(new BoxLayout(playerTurn, BoxLayout.Y_AXIS));
 		Player[] ps = getPlayers();
 		for (int i=0; i<ps.length; i++){
-			if (getTrun() == i){
+			if (getTurn() == i){
 				playerTurn.add(new JLabel(">"));
 			}else{
 				playerTurn.add(new JLabel(" "));
@@ -63,23 +70,24 @@ public class GameGUI extends GameEngine {
 	}
 	
 	private void updateDiscardImage(){
-		aDiscardImage.setIcon(CardImages.getCard(peekDiscard()));
+		aDiscardImage.setCard(peekDiscard());
+	}
+	
+	private void updateHandDisplay(){
+		int i=0;
+		for (Card c: getPlayers()[getTurn()]){
+			((CardButton)aHandDisplay.getComponent(i)).setCard(c);
+			i++;
+		}
+		aHandDisplay.revalidate();
+		aHandDisplay.repaint();
 	}
 	
 	private void setupCardsPacks(){
 		JPanel aCardStackDisplay = new JPanel();
-		aCardStackDisplay.setLayout(new GridLayout(0,2,5,5));
-		
-		JLabel a = new JLabel("Deck");
-		a.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-		aCardStackDisplay.add(a);
-		JLabel b = new JLabel("Discard");
-		a.setAlignmentY(Component.BOTTOM_ALIGNMENT);
-		aCardStackDisplay.add(b);
+		aCardStackDisplay.setLayout(new FlowLayout(FlowLayout.CENTER, 150, 0));
 		aDeckImage.setIcon(CardImages.getBack());
-		aDeckImage.setBorderPainted(false);  
-		aDeckImage.setFocusPainted(false);  
-		aDeckImage.setContentAreaFilled(false);
+		aDeckImage.setToolTipText("Deck");
 //		aDeckImage.addActionListener(new ActionListener(){
 //			@Override
 //			public void actionPerformed(ActionEvent e) {
@@ -88,17 +96,33 @@ public class GameGUI extends GameEngine {
 //			}
 //		});
 		aCardStackDisplay.add(aDeckImage);
+		aDiscardImage.setToolTipText("Discard");
 		updateDiscardImage();
-		aDiscardImage.setBorderPainted(false);  
-		aDiscardImage.setFocusPainted(false);  
-		aDiscardImage.setContentAreaFilled(false);
 		aCardStackDisplay.add(aDiscardImage);
-		aMainPanel.add(aCardStackDisplay);
+		aHandDisplay.setLayout(new FlowLayout());
+		for (int i=0; i<Hand.HANDSIZE; i++){
+			aHandDisplay.add(new CardButton());
+		}
+		JPanel stack = new JPanel();
+		stack.setLayout(new BoxLayout(stack, BoxLayout.Y_AXIS));
+		stack.add(Box.createRigidArea(new Dimension(0,200)));
+		stack.add(aCardStackDisplay);
+		stack.add(Box.createRigidArea(new Dimension(0,200)));
+		stack.add(aHandDisplay);
+		aMainPanel.add(stack, BorderLayout.CENTER);
+	}
+	
+	public void start(){
+		playNextRound();
+		updateHandDisplay();
 	}
 	
 	public void show(JFrame jf){
 		displayPlayer();
 		setupCardsPacks();
+		CommandLineObs clo = new CommandLineObs();
+		addObserver(clo);
+		start();
 		jf.add(aMainPanel);
 	}
 }
